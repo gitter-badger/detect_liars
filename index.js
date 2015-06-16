@@ -176,8 +176,8 @@ function check_dimensions(widthFlash, heightFlash){
 }
 
 //If no fonts flash juste give an empty array
-//add flash platform 
-function check_os(userAgentHttp, fontsFlash){
+//If no flash platform pass an empty string ""
+function check_os(userAgentHttp, fontsFlash, platformFlash){
 	//Maybe problem with fonts/plugins as we consider android = Linux and iPhone = mac 
 	userAgent = navigator.userAgent;
 	oscpu = navigator.oscpu;
@@ -222,6 +222,20 @@ function check_os(userAgentHttp, fontsFlash){
 	}else if(platform.toLowerCase().indexOf("windows") == 0 && platform.toLowerCase().indexOf("linux") == 0 && platform.toLowerCase().indexOf("mac") >= 0 && os != "other"){
 		return false;
 	}
+
+	//We compare flash platform with the os extracted from the ua
+	if(platformFlash !==""){
+		if(platformFlash.toLowerCase().indexOf("windows") >= 0 && os !=="Windows"){
+			return false;
+		}else if(platformFlash.toLowerCase().indexOf("linux") >= 0 && os !=="Linux"){
+			return false;
+		}else if(platformFlash.toLowerCase().indexOf("mac") >= 0 && os !=="Mac"){
+			return false;
+		}else if(platformFlash.toLowerCase().indexOf("windows") == 0 && platformFlash.toLowerCase().indexOf("linux") == 0 && platformFlash.toLowerCase().indexOf("mac") >= 0 && os != "other"){
+			return false;
+		}
+	}
+
 
 	//We check the plugins
 	var listPLuginsWindows = ["microsoft office","adobe acrobat", "google update", "javatm platform se", "java deployment toolkit", "intel", "vlc web plugin", "nvidia", "google earth plugin"];
@@ -406,6 +420,7 @@ function check_date(){
 
 //Guess the truth
 //if no fonts flash give an empty array
+//add flash platform
 function guess_os(userAgentHttp, fontsFlash){
 	appVersion = navigator.appVersion;
 	userAgent = navigator.userAgent;
@@ -483,10 +498,16 @@ function guess_os(userAgentHttp, fontsFlash){
 		var percentageFontsFlashMac = (counterMac/listFontsMac.length)*100;
 		var percentageFontsFlashLinux = (counterLinux/listFontsLinux.length)*100;
 
-		var percentagesFlash = [percentageFontsFlashWindows, percentageFontsFlashMac, percentageFontsFlashLinux];
-		percentagesFlash.sort();
+		if(percentageFontsFlashWindows > percentageFontsFlashLinux && percentageFontsFlashWindows > percentageFontsFlashMac && percentageFontsFlashWindows > 45){
+			var osFontsFlash = "Windows";
+		}else if(percentageFontsFlashMac > percentageFontsFlashLinux && percentageFontsFlashMac > percentageFontsFlashWindows && percentageFontsFlashMac > 45){
+			var osFontsFlash = "Mac";
+		}else if(percentageFontsFlashLinux > percentageFontsFlashWindows && percentageFontsFlashLinux > percentageFontsFlashMac && percentageFontsFlashLinux > 45){
+			var osFontsFlash ="Linux";
+		}else{
+			var osFontsFlash = "Other"
+		}
 
-		console.log(percentagesFlash);
 	}else{
 		//We try to guess the os using css + javascript detection of fonts
     	listFontsWindows = ["JasmineUPC", "Minion Pro Cond", "Bodoni MT", "Franklin Gothic Demi Cond", "LilyUPC", "Showcard Gothic", "Freestyle Script", "Traditional Arabic", "Microsoft JhengHei", "NSimSun", "Roman", "Iskoola Pota", "Eras Medium ITC", "Vani", "Cordia New", "Browallia New", "Tekton Pro Cond", "Poor Richard", "Felix Titling", "Agency FB", "Sakkal Majalla", "Linux Libertine G", "Khmer UI", "Times New Roman CYR", "MS Outlook", "Segoe UI Light", "Rage Italic", "Segoe UI Semilight", "Andalus", "Arabic Typesetting", "MS UI Gothic", "Dotum", "DokChampa", "DaunPenh", "Kokila", "Aharoni", "Ravie", "Euphemia", "Tw Cen MT Condensed Extra Bold", "Times New Roman TUR", "Harlow Solid Italic", "Nueva Std Cond", "Segoe UI Symbol", "Lao UI", "Microsoft YaHei UI", "Yu Mincho", "Kartika", "Rockwell Condensed", "Parchment", "Vivaldi", "Berlin Sans FB", "Microsoft PhagsPa", "Tempus Sans ITC", "Microsoft YaHei Light", "AngsanaUPC", "Eras Bold ITC", "Vrinda", "Viner Hand ITC", "Bodoni MT Black", "Sitka Display", "Yu Gothic Light", "Tw Cen MT Condensed", "CordiaUPC", "Gadugi", "Gisha", "Javanese Text", "Arial TUR", "Microsoft New Tai Lue", "Aparajita", "Microsoft JhengHei UI Light", "Miriam", "GulimChe", "IrisUPC", "Myanmar Text", "French Script MT", "Angsana New", "Magneto", "Gill Sans Ultra Bold Condensed", "Arial Greek", "Pristina", "Segoe UI", "Shonar Bangla", "Franklin Gothic Heavy", "Estrangelo Edessa", "Nirmala UI", "Informal Roman", "MV Boli", "Utsaah", "Courier New CYR", "Old English Text MT", "Arial Baltic", "Blackadder ITC", "Niagara Engraved", "Broadway", "Sylfaen", "Kunstler Script", "Sitka Text", "Bodoni MT Poster Compressed", "Microsoft YaHei UI Light", "Raavi", "Goudy Stout", "Courier New Greek", "Times New Roman Baltic", "Fixedsys", "Courier New CE", "Kalinga", "Sitka Heading", "Castellar", "Yu Gothic", "Small Fonts", "Maiandra GD", "Modern", "Leelawadee", "Arabic Transparent", "BrowalliaUPC", "Microsoft JhengHei UI", "KaiTi", "BatangChe", "DotumChe", "Microsoft Uighur", "Eras Demi ITC", "Miriam Fixed", "Snap ITC", "DilleniaUPC", "Minion Pro Med", "Malgun Gothic", "Gigi", "Lithos Pro Regular", "Rod", "High Tower Text", "Levenim MT", "Meiryo UI", "Franklin Gothic Medium Cond", "Chiller", "Jokerman", "Leelawadee UI Semilight", "DFKai-SB", "Bodoni MT Condensed", "Segoe Print", "Sitka Banner", "Minion Pro SmBd", "Segoe Script", "Elephant", "Courier New Baltic", "Vladimir Script", "Juice ITC", "Algerian", "Segoe UI Emoji", "Niagara Solid", "Vijaya", "Myriad Pro Light", "GungsuhChe", "Tekton Pro Ext", "Gill Sans MT Condensed", "EucrosiaUPC", "Times New Roman CE", "Tunga", "Arial CE", "OCR A Extended", "Mangal", "Franklin Gothic Demi", "Microsoft JhengHei Light", "Courier New TUR", "Ebrima", "Myriad Pro Cond", "Urdu Typesetting", "Arial CYR", "Aldhabi", "Bradley Hand ITC", "FrankRuehl", "Nyala", "MS Serif", "KodchiangUPC", "Terminal", "Sitka Subheading", "Segoe UI Semibold", "Yu Mincho Demibold", "Gautami", "Palace Script MT", "Yu Mincho Light", "FreesiaUPC", "Segoe UI Black", "Simplified Arabic", "System", "Narkisim", "Nirmala UI Semilight", "Californian FB", "FangSong", "Latha", "Kristen ITC", "David", "Eras Light ITC", "Berlin Sans FB Demi", "Leelawadee UI", "Sitka Small", "Gungsuh", "Centaur", "MS Sans Serif", "Forte", "Microsoft YaHei", "Times New Roman Greek", "Gill Sans MT Ext Condensed Bold", "Linux Biolinum G", "MoolBoran", "Shruti", "Simplified Arabic Fixed", "Script MT Bold"];
@@ -523,23 +544,54 @@ function guess_os(userAgentHttp, fontsFlash){
         var percentageFontsNoFlashWindows = (counterWindows/listFontsWindows.length)*100;
         var percentageFontsNoFlashMac = (counterMac/listFontsMac.length)*100; 
         var percentageFontsNoFlashLinux = (counterLinux/listFontsLinux.length)*100;
+
+        if(percentageFontsNoFlashWindows > percentageFontsNoFlashLinux && percentageFontsNoFlashWindows > percentageNoFontsFlashMac && percentageFontsNoFlashWindows > 45){
+			var osFontsNoFlash = "Windows";
+		}else if(percentageFontsNoFlashMac > percentageFontsNoFlashLinux && percentageFontsNoFlashMac > percentageFontsNoFlashWindows && percentageFontsNoFlashMac > 45){
+			var osFontsNoFlash = "Mac";
+		}else if(percentageFontsNoFlashLinux > percentageFontsNoFlashWindows && percentageFontsNoFlashLinux > percentageFontsNoFlashMac && percentageFontsNoFlashLinux > 45){
+			var osFontsNoFlash ="Linux";
+		}else{
+			var osFontsNoFlash = "Other"
+		}
 	}
 
-	console.log("os Http :"+osHttp);
-	console.log("os ua nav : "+osUaNav);
-	console.log("os platform : "+osPlatform);
+	//We define weight to choose the true os
+	var weightNavUa = 1;
+	var weightHttpUa = 1;
+	var weightNavPlatform = 1;
+	var weightNavOscpu = 2;
+	var weightFlashFonts = 8;
+	var weightNoFlashFonts = 5;
+
+	var mapScores = new Object();
+	mapScores["Windows"] = 0;
+	mapScores["Mac"] = 0;
+	mapScores["Linux"] =0;
+	mapScores["Other"] =0;
+
+	mapScores[osUaNav] += weightNavUa;
+	mapScores[osHttp] += weightHttpUa;
+	mapScores[osPlatform] += weightNavPlatform;
 	if(oscpu != undefined){
-		console.log("os oscpu : "+osOscpu);
+		mapScores[osOscpu] += weightNavOscpu;
 	}
-	if(fontsFlash.length > 0){
-		console.log("pct with flash : percentageFontsFlashLinux : "+percentageFontsFlashLinux+", percentageFontsFlashWIndows : "+percentageFontsFlashWindows+", percentageFontsFlashMac : "+percentageFontsFlashMac);
+	if(fontsFlash.length  > 0){
+		mapScores[osFontsFlash] += weightFlashFonts;
 	}else{
-		console.log("pct without flash : percentageFontsNoFlashLinux : "+percentageFontsNoFlashLinux+", percentageFontsNoFlashWIndows : "+percentageFontsNoFlashWindows+", percentageFontsNoFlashMac : "+percentageFontsNoFlashMac);
+		mapScores[osFontsNoFlash] += weightNoFlashFonts;
 	}
 
-
-
+	var max = "Windows";
+	for(var k in mapScores){
+		if(mapScores[k] > mapScores[max]){
+			max = k;
+		}
+	}
+	mapScores["OS"] = max;
+	console.log(mapScores);
 }
+
 try{
 	var fl = document.getElementById("OSData");
 	fontsFlash = fl.getFonts();
@@ -548,7 +600,7 @@ try{
 		var fontsFlash = getFlashFonts();
 		console.log(guess_os(userAgentHttp,fontsFlash));
 		console.log("check date : "+check_date());
-		console.log("check os : "+check_os(userAgentHttp,[]))
+		console.log("check os : "+check_os(userAgentHttp,[], ""))
 		console.log("languages : "+check_languages(languagesHttp, ""));
 		console.log("dimensions : "+check_dimensions(0, 0));
 		console.log("width flash : "+getFlashWidth());
