@@ -140,13 +140,13 @@ function check_os(userAgentHttp, fontsFlash){
 
 		var pctFontsFlash = (counter/listFonts.length)*100;
 
-		if((os ==="Windows" || os ==="Mac") && !testPlugins && pctFontsFlash < 15){
+		if((os ==="Windows" || os ==="Mac") && !testPlugins && pctFontsFlash < 35){
 			return false;
-		}else if(os ==="Linux" && pctFontsFlash < 10){
+		}else if(os ==="Linux" && pctFontsFlash < 30){
 			return false;
 		}
 
-	}else if(fontsFlash.lenth == 0 && os !=="Other"){ //If flash wasn't avalaible
+	}else if(fontsFlash.length == 0 && os !=="Other"){ //If flash wasn't avalaible
 		var Detector = function() {
 		    // a font will be compared against all the three default fonts.
 		    // and if it doesn't match all 3 then that font is not available.
@@ -173,8 +173,8 @@ function check_os(userAgentHttp, fontsFlash){
 		        h.appendChild(s);
 		        //defaultWidth[baseFonts[index]] = s.offsetWidth; //width for the default font
 		        defaultWidth[baseFonts[index]] = s.getBoundingClientRect().width; //width for the default font
-		        console.log('offset: ' + s.offsetWidth + 'x' + s.offsetHeight);
-		        console.log('crect: ' +  s.getBoundingClientRect().width + 'x' + s.getBoundingClientRect().height);
+		        //console.log('offset: ' + s.offsetWidth + 'x' + s.offsetHeight);
+		        //console.log('crect: ' +  s.getBoundingClientRect().width + 'x' + s.getBoundingClientRect().height);
 		        //defaultHeight[baseFonts[index]] = s.offsetHeight; //height for the defualt font
 		        defaultHeight[baseFonts[index]] = s.getBoundingClientRect().height; //height for the defualt font
 		        
@@ -188,7 +188,7 @@ function check_os(userAgentHttp, fontsFlash){
 		            h.appendChild(s);
 		            //var matched = (s.offsetWidth != defaultWidth[baseFonts[index]] || s.offsetHeight != defaultHeight[baseFonts[index]]);
 		            var matched = (s.getBoundingClientRect().width != defaultWidth[baseFonts[index]] || s.getBoundingClientRect().height != defaultHeight[baseFonts[index]]);
-		            console.log(font + ' offset: ' + s.offsetWidth + 'x' + s.offsetHeight + '**** crect: ' +  s.getBoundingClientRect().width + 'x' + s.getBoundingClientRect().height);
+		            //console.log(font + ' offset: ' + s.offsetWidth + 'x' + s.offsetHeight + '**** crect: ' +  s.getBoundingClientRect().width + 'x' + s.getBoundingClientRect().height);
 		            h.removeChild(s);
 		            detected = detected || matched;
 		        }
@@ -210,18 +210,19 @@ function check_os(userAgentHttp, fontsFlash){
     	}
 
     	counter = 0;
-    	for (i = 0; i < fonts.length; i++) {
-            var result = d.detect(fonts[i]);
+    	for (i = 0; i < listFonts.length; i++) {
+            var result = d.detect(listFonts[i]);
             if (result){
             	counter++;
             }          
         }
 
         var pctFontsNoFlash = (counter/listFonts.length)*100;
+        console.log("test % fonts : "+pctFontsNoFlash);
 
-        if((os ==="Windows" || os ==="Mac") && !testPlugins && pctFontsNoFlash < 10){
+        if((os ==="Windows" || os ==="Mac") && !testPlugins && pctFontsNoFlash < 30){
 			return false;
-		}else if(os ==="Linux" && pctFontsNoFlash < 7){
+		}else if(os ==="Linux" && pctFontsNoFlash < 25){
 			return false;
 		}
 	}
@@ -267,18 +268,62 @@ function check_browser(userAgentHttp){
 		navObjectSorted += navObjectProp[i]+", ";
 	}
 
+	//Maybe problems with different version of browsers ?????? maybe do percentages ?
 	var protoFirefox = "appCodeName, appName, appVersion, battery, buildID, cookieEnabled, doNotTrack, geolocation, getGamepads, javaEnabled, language, languages, mediaDevices, mimeTypes, mozGetUserMedia, onLine, oscpu, platform, plugins, product, productSub, registerContentHandler, registerProtocolHandler, requestMediaKeySystemAccess, sendBeacon, taintEnabled, userAgent, vendor, vendorSub, vibrate, ";
 	var protoChrome = "appCodeName, appName, appVersion, cookieEnabled, doNotTrack, geolocation, getBattery, getGamepads, getStorageUpdates, hardwareConcurrency, javaEnabled, language, languages, maxTouchPoints, mimeTypes, onLine, permissions, platform, plugins, product, productSub, registerProtocolHandler, requestMIDIAccess, requestMediaKeySystemAccess, sendBeacon, serviceWorker, unregisterProtocolHandler, userAgent, vendor, vendorSub, vibrate, webkitGetUserMedia, webkitPersistentStorage, webkitTemporaryStorage, ";
-
+	var protoIE = "appCodeName, appMinorVersion, appName, appVersion, browserLanguage, confirmSiteSpecificTrackingException, confirmWebWideTrackingException, cookieEnabled, cpuClass, geolocation, javaEnabled, language, maxTouchPoints, mimeTypes, msLaunchUri, msManipulationViewsEnabled, msMaxTouchPoints, msPointerEnabled, msSaveBlob, msSaveOrOpenBlob, onLine, platform, plugins, pointerEnabled, product, removeSiteSpecificTrackingException, removeWebWideTrackingException, storeSiteSpecificTrackingException, storeWebWideTrackingException, systemLanguage, taintEnabled, userAgent, userLanguage, vendor, webdriver, ";
+	
 	if(browser === "Firefox" && navObjectSorted !== protoFirefox){
 		return false;
 	}
 	else if(browser === "Chrome" && navObjectSorted !== protoChrome){
 		return false;
-	}else if(browser ==="Other" && (navObjectSorted === protoFirefox || navObjectSorted === protoChrome)){
+	}else if(browser ==="Internet Explorer" && navObjectSorted != protoIE){
+		return false;
+	}else if(browser ==="Other" && (navObjectSorted === protoFirefox || navObjectSorted === protoChrome || navObjectSorted === protoIE)){
 		return false;
 	}
-	//Cases with internet explorer, opera etc ...
+	//Cases with opera etc ...
+
+	/*
+		var listPluginsChrome = ["chrome pdf viewer", "native client", "widevine content decryption module", "chrome remote desktop viewer"];
+		//we don't use plugins for safari and firefox because there are not plugins which caracterize safari/firefox AND which are used by a wide majority of people
+		var listPluginsIE = ["flash", "windowsmediaplayer", "silverlight", "adobereader", "java", "shockwave", "quicktime"]; //Not used for the moment
+
+		if(browser === "Chrome" || browser ==="Internet Explorer"){
+			var testPlugins = false;
+			for(var i =0; i < navigator.plugins.length; i++){
+				if((browser === "Chrome" && listPLuginsChrome.indexOf(navigator.plugins[i].name.toLowerCase()) >= 0) || (browser === "Internet Explorer" && listPLuginsCHrome.indexOf(navigator.plugins[i].name.toLowerCase()) >= 0)){
+					testPlugins = true;
+					break;
+				}
+			}
+		}
+	*/
+
+	//We test if err.toSource is defined
+	try{
+		dsfsdf;
+	}catch(err){
+		try{
+			var v = err.toSource();
+			var errFirefox = true;
+		}catch(errOferr){
+			var errFirefox = false;
+		}
+	}
+
+	//we test if document.namespace exist (for ie)
+	if(document.namespace != undefined){
+		var testNamespace = true;
+	}else{
+		var testNamespace = false;
+	}
+
+	if((browser ==="Firefox" && !errFirefox) || (browser === "Internet Explorer" && !testNamespace) || (browser === "Safari" && (errFirefox || !testNamespace)) || (browser === "Chrome" && (errFirefox || !testNamespace))) {
+		return false;
+	}
+
 
 	return true;
 }
@@ -293,12 +338,6 @@ function check_date(){
 
 	return true;
 }
-
-
-
-
-
-
 
 
 console.log("check date : "+check_date());
