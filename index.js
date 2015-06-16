@@ -2,7 +2,7 @@ var languagesHttp = "fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4";
 var userAgentHttp ="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.125 Safari/537.36";
 
 
-function check_languages(languagesHttp){
+function check_languages(languagesHttp, languageFlash){
 	language = navigator.language;
 	languages = navigator.languages;
 
@@ -36,6 +36,12 @@ function check_languages(languagesHttp){
 	console.log(languages);
 	if(languagesHttpParsed != languages){
 		return false;
+	}
+
+	if(languageFlash !== ""){
+		if(languageFlash !== language){
+			return false;
+		}		
 	}
 
 	return true;
