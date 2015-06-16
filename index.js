@@ -1,5 +1,6 @@
 /*
 	TODO : add battery to know if the personn uses a desktop computer
+	check problem with plugins on ie
 */
 
 var languagesHttp = "fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4";
@@ -480,7 +481,7 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 		var osPlatform = "Linux"
 	}else if(platform.toLowerCase().indexOf("mac") >= 0){
 		var osPlatform = "Mac";
-	}else if(platform.toLowerCase().indexOf("windows") == 0 && platform.toLowerCase().indexOf("linux") == 0 && platform.toLowerCase().indexOf("mac") >= 0 && os != "other"){
+	}else{
 		var osPlatform ="Other";
 	}
 
@@ -491,7 +492,7 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 		var osPlatformFlash = "Linux"
 	}else if(platformFlash.toLowerCase().indexOf("mac") >= 0){
 		var osPlatformFlash = "Mac";
-	}else if(platformFlash.toLowerCase().indexOf("windows") == 0 && platform.toLowerCase().indexOf("linux") == 0 && platform.toLowerCase().indexOf("mac") >= 0 && os != "other"){
+	}else{
 		var osPlatformFlash ="Other";
 	}
 
@@ -785,12 +786,105 @@ function guess_browser(userAgentHttp){
 		}
 	}
 
-	mapScores["Browser"] = max;
+	mapScores["browser"] = max;
 
 	return mapScores;
 }
 
 
+function getOs(){
+	if(platform.toLowerCase().indexOf("windows") >= 0){
+		var osPlatform = "Windows";
+	}else if(platform.toLowerCase().indexOf("linux") >= 0){
+		var osPlatform = "Linux"
+	}else if(platform.toLowerCase().indexOf("mac") >= 0){
+		var osPlatform = "Mac";
+	}else{
+		var osPlatform ="Other";
+	}
+
+	return osPlatform;
+}
+
+function getBrowser(){
+	userAgent = navigator.userAgent;
+
+	//We get the browser via navigator.userAgent
+	if(userAgent.toLowerCase().indexOf("firefox") >= 0){
+		var browserNavUa = "Firefox";
+	}else if(userAgent.toLowerCase().indexOf("chrome") >= 0){
+		var browserNavUa ="Chrome";
+	}else if(userAgent.toLowerCase().indexOf("safari") >= 0){
+		var browserNavUa ="Safari";
+	}else if(userAgent.toLowerCase().indexOf("trident") >= 0){
+		var browserNavUa = "Internet Explorer";
+	}else if(userAgent.toLowerCase().indexOf("opera") >= 0){
+		var browserNavUa ="Opera";
+	}else{
+		var browserNavUa = "Other";
+	}
+
+	return browserNavUa;
+}
+
+function Fingerprint (userAgentHttp, fontsFlash, platformFlash) {
+    this.width = screen.width;
+    this.height = screen.height;
+    this.availWidth = screen.availWidth;
+    this.availHeight = screen.availHeight;
+    this.colorDepth = screen.colorDepth;
+    this.pixelDepth = screen.pixelDepth;
+
+    this.userAgent = navigator.userAgent;
+    this.appName = navigator.appName;
+    this.appVersion = navigator.appVersion;
+    this.oscpu = navigator.oscpu;
+    this.vendor= navigator.vendor;
+    this.platform = navigator.platform;
+    this.appCodeName = navigator.appCodeName;
+    this.vendorSub = navigator.vendorSub;
+    this.cookieEnabled = navigator.cookieEnabled;
+    this.product = navigator.product;
+    this.language = navigator.language;
+    this.languages = navigator.languages;
+    this.productSub = navigator.productSub;
+    this.javaEnabled = navigator.javaEnabled;
+
+    this.os = this.getTrueOs();
+    this.browser = this.getTrueBrowser();
+    //add plugins, prototype of navigator
+
+    this.userAgentHttp = userAgentHttp;
+    //add other ĥttp
+
+    this.fontsFlash = fontsFlash;
+    this.platformFlash= platformFlash;
+
+    this.getTrueOs= function(){
+    	var lie = check_os(this.userAgentHttp, this.fontsFlash, this.platformFlash);
+    	//if the person has lied
+    	if(!lie){
+    		var os = guess_os(this.userAgentHttp, this.fontsFlash, this.platformFlash);
+    		return os["OS"];
+    	}else{
+    		return getOs();
+    	}
+    };
+
+    this.getOs = function(){
+    	return this.os;
+    };
+
+    this.getTrueBrowser = function(){
+    	var lie = check_browser(this.userAgentHttp);
+    	if(!lie){
+    		var browser = guess_browser(this.userAgentHttp);
+    		return browser["browser"];
+    	}else{
+    		return getBrowser();
+    	}
+    };
+}
 
 try{
 	var fl = document.getElementById("OSData");
