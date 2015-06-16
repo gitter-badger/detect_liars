@@ -420,8 +420,8 @@ function check_date(){
 
 //Guess the truth
 //if no fonts flash give an empty array
-//add flash platform
-function guess_os(userAgentHttp, fontsFlash){
+//if no platform flash give an empty string
+function guess_os(userAgentHttp, fontsFlash, platformFlash){
 	appVersion = navigator.appVersion;
 	userAgent = navigator.userAgent;
 	platform = navigator.platform;
@@ -449,7 +449,7 @@ function guess_os(userAgentHttp, fontsFlash){
 		var osUaNav = "Other";
 	}
 
-	//test 3 with platform	
+	//test 3 with navigator platform	
 	if(platform.toLowerCase().indexOf("windows") >= 0){
 		var osPlatform = "Windows";
 	}else if(platform.toLowerCase().indexOf("linux") >= 0){
@@ -458,6 +458,17 @@ function guess_os(userAgentHttp, fontsFlash){
 		var osPlatform = "Mac";
 	}else if(platform.toLowerCase().indexOf("windows") == 0 && platform.toLowerCase().indexOf("linux") == 0 && platform.toLowerCase().indexOf("mac") >= 0 && os != "other"){
 		var osPlatform ="Other";
+	}
+
+	//test 4 with flash platform
+	if(platformFlash.toLowerCase().indexOf("windows") >= 0){
+		var osPlatformFlash = "Windows";
+	}else if(platformFlash.toLowerCase().indexOf("linux") >= 0){
+		var osPlatformFlash = "Linux"
+	}else if(platformFlash.toLowerCase().indexOf("mac") >= 0){
+		var osPlatformFlash = "Mac";
+	}else if(platformFlash.toLowerCase().indexOf("windows") == 0 && platform.toLowerCase().indexOf("linux") == 0 && platform.toLowerCase().indexOf("mac") >= 0 && os != "other"){
+		var osPlatformFlash ="Other";
 	}
 
 	//We test with oscpu 
@@ -560,6 +571,7 @@ function guess_os(userAgentHttp, fontsFlash){
 	var weightNavUa = 1;
 	var weightHttpUa = 1;
 	var weightNavPlatform = 1;
+	var weightPlatformFlash = 4;
 	var weightNavOscpu = 2;
 	var weightFlashFonts = 8;
 	var weightNoFlashFonts = 5;
@@ -573,6 +585,7 @@ function guess_os(userAgentHttp, fontsFlash){
 	mapScores[osUaNav] += weightNavUa;
 	mapScores[osHttp] += weightHttpUa;
 	mapScores[osPlatform] += weightNavPlatform;
+	mapScores[osPlatformFlash] += weightPlatformFlash;
 	if(oscpu != undefined){
 		mapScores[osOscpu] += weightNavOscpu;
 	}
@@ -589,7 +602,7 @@ function guess_os(userAgentHttp, fontsFlash){
 		}
 	}
 	mapScores["OS"] = max;
-	console.log(mapScores);
+	return mapScores;
 }
 
 try{
@@ -598,7 +611,8 @@ try{
 }catch(err){
 	setTimeout(function(){
 		var fontsFlash = getFlashFonts();
-		console.log(guess_os(userAgentHttp,fontsFlash));
+		var platformFlash = getFlashPlatform();
+		console.log(guess_os(userAgentHttp,fontsFlash, platformFlash));
 		console.log("check date : "+check_date());
 		console.log("check os : "+check_os(userAgentHttp,[], ""))
 		console.log("languages : "+check_languages(languagesHttp, ""));
