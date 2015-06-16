@@ -1,3 +1,7 @@
+/*
+	TODO : add battery to know if the personn uses a desktop computer
+*/
+
 var languagesHttp = "fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4";
 var userAgentHttp ="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.125 Safari/537.36";
 
@@ -54,11 +58,15 @@ function getFlashFonts(){
     if(fl == null){
         return [];
     } else{
-        fontsFlash = fl.getFonts();
+    	try{
+	        fontsFlash = fl.getFonts();
 
-        for(var i = 0; i < fontsFlash.length; i++){
-        	fontsFlash[i].replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '_');
-        }
+	        for(var i = 0; i < fontsFlash.length; i++){
+	        	fontsFlash[i].replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '_');
+	        }
+	     }catch(err){
+	     	return [];
+	     }
     }
     return fontsFlash;
 }
@@ -68,7 +76,11 @@ function getFlashWidth(){
     if(fl == null){
         return 0;
     } else{
-    	return fl.getResolution()[0];     
+    	try{
+    		return fl.getResolution()[0]; 
+    	}catch(err){
+    		return 0;
+    	}    
     }
 }
 
@@ -77,7 +89,11 @@ function getFlashHeight(){
     if(fl == null){
         return 0;
     } else{
-    	return fl.getResolution()[1];     
+    	try{
+    		return fl.getResolution()[1];   
+    	}catch(err){
+    		return 0;
+    	}  
     }
 }
 
@@ -86,7 +102,11 @@ function getFlashLanguage(){
     if(fl == null){
         return "";
     } else{
-    	return fl.getLanguage();     
+    	try{
+    		return fl.getLanguage();     
+    	}catch(err){
+    		return "";
+    	}
     }
 }
 
@@ -95,7 +115,11 @@ function getFlashPlatform(){
     if(fl == null){
         return "";
     } else{
-    	return fl.getOS();     
+    	try{
+    		return fl.getOS();     
+    	}catch(err){
+    		return "";
+    	}
     }
 }
 
@@ -594,6 +618,8 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 	}else{
 		mapScores[osFontsNoFlash] += weightNoFlashFonts;
 	}
+	
+	delete mapScores[undefined];
 
 	var max = "Windows";
 	for(var k in mapScores){
@@ -605,6 +631,167 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 	return mapScores;
 }
 
+function guess_browser(userAgentHttp){
+	userAgent = navigator.userAgent;
+
+	//We get the browser via navigator.userAgent
+	if(userAgent.toLowerCase().indexOf("firefox") >= 0){
+		var browserNavUa = "Firefox";
+	}else if(userAgent.toLowerCase().indexOf("chrome") >= 0){
+		var browserNavUa ="Chrome";
+	}else if(userAgent.toLowerCase().indexOf("safari") >= 0){
+		var browserNavUa ="Safari";
+	}else if(userAgent.toLowerCase().indexOf("trident") >= 0){
+		var browserNavUa = "Internet Explorer";
+	}else if(userAgent.toLowerCase().indexOf("opera") >= 0){
+		var browserNavUa ="Opera";
+	}else{
+		var browserNavUa = "Other";
+	}
+
+	//We get the browser via userAgent http
+	if(userAgentHttp.toLowerCase().indexOf("firefox") >= 0){
+		var browserHttpUa = "Firefox";
+	}else if(userAgentHttp.toLowerCase().indexOf("chrome") >= 0){
+		var browserHttpUa ="Chrome";
+	}else if(userAgentHttp.toLowerCase().indexOf("safari") >= 0){
+		var browserHttpUa ="Safari";
+	}else if(userAgentHttp.toLowerCase().indexOf("trident") >= 0){
+		var browserHttpUa = "Internet Explorer";
+	}else if(userAgentHttp.toLowerCase().indexOf("opera") >= 0){
+		var browserHttpUa ="Opera";
+	}else{
+		var browserHttpUa = "Other";
+	}
+
+	//We try to guess if the browser is chrome using navigator.appVersion
+	if(navigator.productSub === "20030107"){
+		var browserAppVersion = "Chrome"; 
+	}else{
+		var browserAppVersion = undefined;
+	}
+
+	navObjectProp = [];
+	for (var property in Object.getPrototypeOf(navigator)) {
+		navObjectProp.push(property);
+	}
+	navObjectProp.sort();
+	navObjectSorted = "";
+	for(i=0; i<navObjectProp.length; i++){
+		navObjectSorted += navObjectProp[i]+", ";
+	}
+
+	//We look at the prototype of navigator
+	var protoFirefox = "appCodeName, appName, appVersion, battery, buildID, cookieEnabled, doNotTrack, geolocation, getGamepads, javaEnabled, language, languages, mediaDevices, mimeTypes, mozGetUserMedia, onLine, oscpu, platform, plugins, product, productSub, registerContentHandler, registerProtocolHandler, requestMediaKeySystemAccess, sendBeacon, taintEnabled, userAgent, vendor, vendorSub, vibrate, ";
+	var protoChrome = "appCodeName, appName, appVersion, cookieEnabled, doNotTrack, geolocation, getBattery, getGamepads, getStorageUpdates, hardwareConcurrency, javaEnabled, language, languages, maxTouchPoints, mimeTypes, onLine, permissions, platform, plugins, product, productSub, registerProtocolHandler, requestMIDIAccess, requestMediaKeySystemAccess, sendBeacon, serviceWorker, unregisterProtocolHandler, userAgent, vendor, vendorSub, vibrate, webkitGetUserMedia, webkitPersistentStorage, webkitTemporaryStorage, ";
+	var protoIE = "appCodeName, appMinorVersion, appName, appVersion, browserLanguage, confirmSiteSpecificTrackingException, confirmWebWideTrackingException, cookieEnabled, cpuClass, geolocation, javaEnabled, language, maxTouchPoints, mimeTypes, msLaunchUri, msManipulationViewsEnabled, msMaxTouchPoints, msPointerEnabled, msSaveBlob, msSaveOrOpenBlob, onLine, platform, plugins, pointerEnabled, product, removeSiteSpecificTrackingException, removeWebWideTrackingException, storeSiteSpecificTrackingException, storeWebWideTrackingException, systemLanguage, taintEnabled, userAgent, userLanguage, vendor, webdriver, ";
+	
+	if(navObjectSorted === protoFirefox){
+		var browserPrototype = "Firefox";
+	}
+	else if(navObjectSorted === protoChrome){
+		var browserPrototype = "Chrome";
+	}else if(navObjectSorted === protoIE){
+		var browserPrototype = "Internet Explorer";
+	}
+
+	//We look at the plugins
+	var listPluginsChrome = ["chrome pdf viewer", "native client", "widevine content decryption module", "chrome remote desktop viewer"];
+	//we don't use plugins for safari and firefox because there are not plugins which caracterize safari/firefox AND which are used by a wide majority of people
+	var listPluginsIE = ["flash", "windowsmediaplayer", "silverlight", "adobereader", "java", "shockwave", "quicktime"]; //Not used for the moment
+
+	var counterChrome = 0;
+	var counterIE = 0;
+	for(var i =0; i < navigator.plugins.length; i++){
+		if(listPluginsChrome.indexOf(navigator.plugins[i].name.toLowerCase()) >= 0 ){
+			counterChrome++;
+		}else if(listPluginsIE.indexOf(navigator.plugins[i].name.toLowerCase()) >= 0){
+			counterIE++;
+		}
+	}
+
+	if(counterChrome >= 2){
+		var browserPlugins = "Chrome";
+	}else if(counterIE >= 2){
+		var browserPlugins = "Internet Explorer";
+	}
+
+	if((counterChrome >= 2 && counterIE >=2) || (counterChrome < 2 && counterIE < 2)){
+		var browserPlugins = undefined
+	}
+
+
+	//We test if err.toSource is defined
+	try{
+		dsfsdf;
+	}catch(err){
+		try{
+			var v = err.toSource();
+			var browserError = "Firefox";
+		}catch(errOferr){
+			var browserError = undefined;
+		}
+	}
+
+	//we test if document.namespace exist (for ie)
+	if(document.namespace != undefined){
+		var browserNamespace = "Internet Explorer";
+	}else{
+		var browserNamespace = undefined;
+	}
+
+	try{
+		navigator.permissions.query({name:'geolocation'}).then(function(permissionStatus) {
+        	var browserPermissions = "Chrome";
+    	});
+	}catch(err){
+		var browserPermissions = undefined;
+	}
+
+
+	var weightNavUa = 1;
+	var weightHttpUa = 1;
+	var weightBrowserAppVersion = 2;
+	var weightPrototype = 6;
+	var weightPlugins = 3;
+	var weightError = 6;
+	var weightNamespace = 3;
+	var weightPermissions = 7;
+
+	var mapScores = new Object();
+	mapScores["Chrome"] = 0;
+	mapScores["Firefox"] = 0;
+	mapScores["Safari"] =0;
+	mapScores["Internet Explorer"]=0;
+	mapScores["Opera"] =0;
+	mapScores["Other"] =0;	
+
+	mapScores[browserNavUa] += weightNavUa;
+	mapScores[browserHttpUa] += weightHttpUa;
+	mapScores[browserAppVersion] += weightBrowserAppVersion;
+	mapScores[browserPrototype] += weightPrototype;
+	mapScores[browserPlugins] += weightPlugins;
+	mapScores[browserError] += weightError;
+	mapScores[browserNamespace] += weightNamespace;
+	mapScores[browserPermissions] += weightPermissions;
+
+	delete mapScores[undefined];
+
+
+	var max = "Chrome";
+	for(var k in mapScores){
+		if(mapScores[k] > mapScores[max]){
+			max = k;
+		}
+	}
+
+	mapScores["Browser"] = max;
+
+	return mapScores;
+}
+
+
+
 try{
 	var fl = document.getElementById("OSData");
 	fontsFlash = fl.getFonts();
@@ -612,6 +799,7 @@ try{
 	setTimeout(function(){
 		var fontsFlash = getFlashFonts();
 		var platformFlash = getFlashPlatform();
+		console.log(guess_browser(userAgentHttp));
 		console.log(guess_os(userAgentHttp,fontsFlash, platformFlash));
 		console.log("check date : "+check_date());
 		console.log("check os : "+check_os(userAgentHttp,[], ""))
@@ -621,5 +809,5 @@ try{
 		console.log("height flash : "+getFlashHeight());
 		console.log("language flash : "+getFlashLanguage());
 		console.log("Platform flash : "+getFlashPlatform());
-	},500);		
+	},700);		
 }
