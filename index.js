@@ -358,6 +358,6 @@ function check_date(){
 
 console.log("check date : "+check_date());
 console.log("check os : "+check_os(userAgentHttp,[]))
-console.log("languages : "+check_languages(languagesHttp));
+console.log("languages : "+check_languages(languagesHttp, ""));
 console.log("dimensions : "+check_dimensions(0, 0));
 //check_languages(language, languages, languagesHttp);
