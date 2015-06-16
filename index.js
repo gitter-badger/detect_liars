@@ -41,13 +41,13 @@ function check_languages(languagesHttp){
 	return true;
 }
 
-
-function check_dimensions(){
+//Pass widthFlash = heightFlash = 0 if no flash
+function check_dimensions(widthFlash, heightFlash){
 	width = screen.width;
 	height = screen.height;
 	availWidth = screen.availWidth;
 	availHeight = screen.availHeight;
-	//Maybe add event ? and flash
+	//Maybe add event ? 
 
 	if(width < availWidth){
 		return false;
@@ -55,6 +55,16 @@ function check_dimensions(){
 
 	if(height < availHeight){
 		return false;
+	}
+
+	if(widthFlash != 0 && heightFlash !=0){
+		if(height > 1.15*heightFlash || height < 0.85*heightFlash){
+			return false;
+		}
+
+		if(width > 1.15*widthFlash || width < 0.85*widthFlash){
+			return false;
+		}
 	}
 
 	return true;
@@ -343,5 +353,5 @@ function check_date(){
 console.log("check date : "+check_date());
 console.log("check os : "+check_os(userAgentHttp,[]))
 console.log("languages : "+check_languages(languagesHttp));
-console.log("dimensions : "+check_dimensions());
+console.log("dimensions : "+check_dimensions(0, 0));
 //check_languages(language, languages, languagesHttp);
