@@ -214,65 +214,91 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
 	}
 	
 	//We extract the OS from the user agent
-	if(userAgent.toLowerCase().indexOf("win") >= 0){
+	if(userAgent.toLowerCase().indexOf("windows phone") >= 0){
+		var os ="Windows Phone";
+	}else if(userAgent.toLowerCase().indexOf("win") >= 0){
 		var os = "Windows";
+	}else if(userAgent.toLowerCase().indexOf("android") >= 0){
+		var os = "Android";
 	}else if(userAgent.toLowerCase().indexOf("linux") >= 0){
 		var os ="Linux";
+	}else if(userAgent.toLowerCase().indexOf("iPhone") >= 0 || userAgent.toLowerCase().indexOf("iPad")){
+		var os = "iOS";
 	}else if(userAgent.toLowerCase().indexOf("mac") >= 0){
 		var os ="Mac";
 	}else{
 		var os = "Other";
 	}
-	console.log(os);
+	
+	//We detect if the person uses a mobile device
+	if (('ontouchstart' in window) ||
+	     (navigator.maxTouchPoints > 0) ||
+	     (navigator.msMaxTouchPoints > 0)) {
+	      var mobileDevice = true;
+	}else{
+		var mobileDevice = false;
+	}
+
+	if(mobileDevice && os !== "Windows Phone" && os !=="Android" && os !=="iOS" && os !=="Other"){
+		return false;
+	}
+
+
 	//We compare oscpu with the os extracted from the ua
 	if(oscpu != undefined){
-		if(oscpu.toLowerCase().indexOf("windows") >= 0 && os !=="Windows"){
+		if(oscpu.toLowerCase().indexOf("win") >= 0 && os !=="Windows" && os !=="Windows Phone"){
 			return false;
-		}else if(oscpu.toLowerCase().indexOf("linux") >= 0 && os !=="Linux"){
+		}else if(oscpu.toLowerCase().indexOf("linux") >= 0 && os !=="Linux" && os !=="Android"){
 			return false;
-		}else if(oscpu.toLowerCase().indexOf("mac") >= 0 && os !=="Mac"){
+		}else if(oscpu.toLowerCase().indexOf("mac") >= 0 && os !=="Mac" && os !=="iOS"){
 			return false;
-		}else if(oscpu.toLowerCase().indexOf("windows") == 0 && oscpu.toLowerCase().indexOf("linux") == 0 && oscpu.toLowerCase().indexOf("mac") >= 0 && os != "other"){
+		}else if(oscpu.toLowerCase().indexOf("win") == 0 && oscpu.toLowerCase().indexOf("linux") == 0 && oscpu.toLowerCase().indexOf("mac") >= 0 && os != "other"){
 			return false;
 		}
 	}
 
 	//We compare platform with the os extracted from the ua
-	if(platform.toLowerCase().indexOf("windows") >= 0 && os !=="Windows"){
+	if(platform.toLowerCase().indexOf("win") >= 0 && os !=="Windows" && os !=="Windows Phone"){
 		return false;
-	}else if(platform.toLowerCase().indexOf("linux") >= 0 && os !=="Linux"){
+	}else if((platform.toLowerCase().indexOf("linux") >= 0 || platform.toLowerCase().indexOf("android") >= 0 || platform.toLowerCase().indexOf("pike") >= 0) && os !=="Linux" && os !=="Android"){
 		return false;
-	}else if(platform.toLowerCase().indexOf("mac") >= 0 && os !=="Mac"){
+	}else if((platform.toLowerCase().indexOf("mac") >= 0 ||  platform.toLowerCase().indexOf("ipad") >= 0 || platform.toLowerCase().indexOf("ipod") >= 0 || platform.toLowerCase().indexOf("iphone") >= 0) && os !=="Mac" && os !=="iOS"){
 		return false;
-	}else if(platform.toLowerCase().indexOf("windows") == 0 && platform.toLowerCase().indexOf("linux") == 0 && platform.toLowerCase().indexOf("mac") >= 0 && os != "other"){
+	}else if(platform.toLowerCase().indexOf("win") == 0 && platform.toLowerCase().indexOf("linux") == 0 && platform.toLowerCase().indexOf("mac") >= 0 && os != "other"){
 		return false;
 	}
 
 	//We compare flash platform with the os extracted from the ua
 	if(platformFlash !==""){
-		if(platformFlash.toLowerCase().indexOf("windows") >= 0 && os !=="Windows"){
+		if(platformFlash.toLowerCase().indexOf("win") >= 0 && os !=="Windows" && os !=="Windows Phone"){
 			return false;
-		}else if(platformFlash.toLowerCase().indexOf("linux") >= 0 && os !=="Linux"){
+		}else if((platform.toLowerCase().indexOf("linux") >= 0 || platform.toLowerCase().indexOf("android") >= 0 || platform.toLowerCase().indexOf("pike") >= 0) && os !=="Linux" && os !=="Android"){
 			return false;
-		}else if(platformFlash.toLowerCase().indexOf("mac") >= 0 && os !=="Mac"){
+		}else if((platform.toLowerCase().indexOf("mac") >= 0 ||  platform.toLowerCase().indexOf("ipad") >= 0 || platform.toLowerCase().indexOf("ipod") >= 0 || platform.toLowerCase().indexOf("iphone") >= 0) && os !=="Mac" && os !=="iOS"){
 			return false;
-		}else if(platformFlash.toLowerCase().indexOf("windows") == 0 && platformFlash.toLowerCase().indexOf("linux") == 0 && platformFlash.toLowerCase().indexOf("mac") >= 0 && os != "other"){
+		}else if(platformFlash.toLowerCase().indexOf("win") == 0 && platformFlash.toLowerCase().indexOf("linux") == 0 && platformFlash.toLowerCase().indexOf("mac") >= 0 && os != "other"){
 			return false;
 		}
 	}
 
-
 	//We check the plugins
-	var listPLuginsWindows = ["microsoft office","adobe acrobat", "google update", "javatm platform se", "java deployment toolkit", "intel", "vlc web plugin", "nvidia", "google earth plugin"];
-	//we don't use plugins for linux because there are not plugins which caracterize linux AND which are used by a wide majority of people
-	var listPluginsMac = ["default browser helper", "java applet plug-in", "sharepoint browser plug-in", "adobe acrobat npapi plug-in version", "webex", "webkit built-in pdf", "flip", "iphotophotocast", "google earth plug-in","quickTime plug-in"];
-	if(os === "Windows" || os === "Mac"){
-		var testPlugins = false;
-		for(var i =0; i < navigator.plugins.length; i++){
-			if((os === "Windows" && listPLuginsWindows.indexOf(navigator.plugins[i].name.toLowerCase()) >= 0) || (os === "Mac" && listPLuginsMac.indexOf(navigator.plugins[i].name.toLowerCase()) >= 0)){
-				testPlugins = true;
-				break;
+	if(navigator.plugins != undefined){
+		var listPLuginsWindows = ["microsoft office","adobe acrobat", "google update", "javatm platform se", "java deployment toolkit", "intel", "vlc web plugin", "nvidia", "google earth plugin"];
+		//we don't use plugins for linux because there are not plugins which caracterize linux AND which are used by a wide majority of people
+		var listPluginsMac = ["default browser helper", "java applet plug-in", "sharepoint browser plug-in", "adobe acrobat npapi plug-in version", "webex", "webkit built-in pdf", "flip", "iphotophotocast", "google earth plug-in","quickTime plug-in"];
+		if(os === "Windows" || os === "Mac"){
+			var testPlugins = false;
+			for(var i =0; i < navigator.plugins.length; i++){
+				if((os === "Windows" && listPLuginsWindows.indexOf(navigator.plugins[i].name.toLowerCase()) >= 0) || (os === "Mac" && listPLuginsMac.indexOf(navigator.plugins[i].name.toLowerCase()) >= 0)){
+					testPlugins = true;
+					break;
+				}
 			}
+		}
+	}else{
+		//We are are in the case where the person uses ie, therefore we can infer that it's windows
+		if(os !== "Windows" && os !=="Windows Phone"){
+			return false;
 		}
 	}
 
@@ -357,7 +383,7 @@ function check_browser(userAgentHttp){
 		var browser = "Other";
 	}
 
-	if(browser === "Chrome" && productSub != "20030107"){
+	if((browser === "Chrome" || browser==="Safari" || browser ==="Opera") && productSub != "20030107"){
 		return false;
 	}
 
@@ -374,13 +400,13 @@ function check_browser(userAgentHttp){
 
 	//Maybe problems with different version of browsers ?????? maybe do percentages ?
 	var protoFirefox = "appCodeName, appName, appVersion, battery, buildID, cookieEnabled, doNotTrack, geolocation, getGamepads, javaEnabled, language, languages, mediaDevices, mimeTypes, mozGetUserMedia, onLine, oscpu, platform, plugins, product, productSub, registerContentHandler, registerProtocolHandler, requestMediaKeySystemAccess, sendBeacon, taintEnabled, userAgent, vendor, vendorSub, vibrate, ";
-	var protoChrome = "appCodeName, appName, appVersion, cookieEnabled, doNotTrack, geolocation, getBattery, getGamepads, getStorageUpdates, hardwareConcurrency, javaEnabled, language, languages, maxTouchPoints, mimeTypes, onLine, permissions, platform, plugins, product, productSub, registerProtocolHandler, requestMIDIAccess, requestMediaKeySystemAccess, sendBeacon, serviceWorker, unregisterProtocolHandler, userAgent, vendor, vendorSub, vibrate, webkitGetUserMedia, webkitPersistentStorage, webkitTemporaryStorage, ";
+	var protoChrSafOp = "appCodeName, appName, appVersion, cookieEnabled, doNotTrack, geolocation, getBattery, getGamepads, getStorageUpdates, hardwareConcurrency, javaEnabled, language, languages, maxTouchPoints, mimeTypes, onLine, permissions, platform, plugins, product, productSub, registerProtocolHandler, requestMIDIAccess, requestMediaKeySystemAccess, sendBeacon, serviceWorker, unregisterProtocolHandler, userAgent, vendor, vendorSub, vibrate, webkitGetUserMedia, webkitPersistentStorage, webkitTemporaryStorage, ";
 	var protoIE = "appCodeName, appMinorVersion, appName, appVersion, browserLanguage, confirmSiteSpecificTrackingException, confirmWebWideTrackingException, cookieEnabled, cpuClass, geolocation, javaEnabled, language, maxTouchPoints, mimeTypes, msLaunchUri, msManipulationViewsEnabled, msMaxTouchPoints, msPointerEnabled, msSaveBlob, msSaveOrOpenBlob, onLine, platform, plugins, pointerEnabled, product, removeSiteSpecificTrackingException, removeWebWideTrackingException, storeSiteSpecificTrackingException, storeWebWideTrackingException, systemLanguage, taintEnabled, userAgent, userLanguage, vendor, webdriver, ";
 	
 	if(browser === "Firefox" && navObjectSorted !== protoFirefox){
 		return false;
 	}
-	else if(browser === "Chrome" && navObjectSorted !== protoChrome){
+	else if((browser === "Chrome" || browser ==="Safari" || browser ==="Opera") && navObjectSorted !== protoChrSafOp){
 		return false;
 	}else if(browser ==="Internet Explorer" && navObjectSorted != protoIE){
 		return false;
@@ -389,21 +415,6 @@ function check_browser(userAgentHttp){
 	}
 	//Cases with opera etc ...
 
-	/*
-		var listPluginsChrome = ["chrome pdf viewer", "native client", "widevine content decryption module", "chrome remote desktop viewer"];
-		//we don't use plugins for safari and firefox because there are not plugins which caracterize safari/firefox AND which are used by a wide majority of people
-		var listPluginsIE = ["flash", "windowsmediaplayer", "silverlight", "adobereader", "java", "shockwave", "quicktime"]; //Not used for the moment
-
-		if(browser === "Chrome" || browser ==="Internet Explorer"){
-			var testPlugins = false;
-			for(var i =0; i < navigator.plugins.length; i++){
-				if((browser === "Chrome" && listPLuginsChrome.indexOf(navigator.plugins[i].name.toLowerCase()) >= 0) || (browser === "Internet Explorer" && listPLuginsCHrome.indexOf(navigator.plugins[i].name.toLowerCase()) >= 0)){
-					testPlugins = true;
-					break;
-				}
-			}
-		}
-	*/
 
 	//We test if err.toSource is defined
 	try{
@@ -451,12 +462,21 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 	userAgent = navigator.userAgent;
 	platform = navigator.platform;
 	oscpu = navigator.oscpu;
+	width = screen.width;
+	height = screen.height;
+	resolution = width+"x"+height;
 
 	//Test 1 with userAgentHttp
-	if(userAgentHttp.toLowerCase().indexOf("win") >= 0){
+	if(userAgentHttp.toLowerCase().indexOf("windows phone") >= 0){
+		var osHttp ="Windows Phone";
+	}else if(userAgentHttp.toLowerCase().indexOf("win") >= 0){
 		var osHttp = "Windows";
+	}else if(userAgentHttp.toLowerCase().indexOf("android") >= 0){
+		var os = "Android";
 	}else if(userAgentHttp.toLowerCase().indexOf("linux") >= 0){
 		var osHttp ="Linux";
+	}else if(userAgentHttp.toLowerCase().indexOf("iPhone") >= 0 || userAgent.toLowerCase().indexOf("iPad")){
+		var os = "iOS";
 	}else if(userAgentHttp.toLowerCase().indexOf("mac") >= 0){
 		var osHttp ="Mac";
 	}else{
@@ -464,10 +484,16 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 	}
 
 	//test 2 with navigator.userAgent
-	if(userAgent.toLowerCase().indexOf("win") >= 0){
+	if(userAgent.toLowerCase().indexOf("windows phone") >= 0){
+		var osUaNav ="Windows Phone";
+	}else if(userAgent.toLowerCase().indexOf("win") >= 0){
 		var osUaNav = "Windows";
+	}else if(userAgent.toLowerCase().indexOf("android") >= 0){
+		var os = "Android";
 	}else if(userAgent.toLowerCase().indexOf("linux") >= 0){
 		var osUaNav ="Linux";
+	}else if(userAgent.toLowerCase().indexOf("iPhone") >= 0 || userAgent.toLowerCase().indexOf("iPad")){
+		var os = "iOS";
 	}else if(userAgent.toLowerCase().indexOf("mac") >= 0){
 		var osUaNav ="Mac";
 	}else{
@@ -475,23 +501,31 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 	}
 
 	//test 3 with navigator platform	
-	if(platform.toLowerCase().indexOf("windows") >= 0){
+	if(platform.toLowerCase().indexOf("win") >= 0){
 		var osPlatform = "Windows";
 	}else if(platform.toLowerCase().indexOf("linux") >= 0){
 		var osPlatform = "Linux"
+	}else if(platform.toLowerCase().indexOf("ipad") >= 0 || platform.toLowerCase().indexOf("ipod") >= 0 || platform.toLowerCase().indexOf("iphone") >= 0){
+		var osPlatform = "iOS";
 	}else if(platform.toLowerCase().indexOf("mac") >= 0){
 		var osPlatform = "Mac";
+	}else if(platform.toLowerCase().indexOf("android") >= 0 || platform.toLowerCase().indexOf("pike") >= 0){
+		var osPlatform = "Android";
 	}else{
 		var osPlatform ="Other";
 	}
 
 	//test 4 with flash platform
-	if(platformFlash.toLowerCase().indexOf("windows") >= 0){
+	if(platformFlash.toLowerCase().indexOf("win") >= 0){
 		var osPlatformFlash = "Windows";
 	}else if(platformFlash.toLowerCase().indexOf("linux") >= 0){
 		var osPlatformFlash = "Linux"
+	}else if(platform.toLowerCase().indexOf("ipad") >= 0 || platform.toLowerCase().indexOf("ipod") >= 0 || platform.toLowerCase().indexOf("iphone") >= 0){
+		var osPlatform = "iOS";
 	}else if(platformFlash.toLowerCase().indexOf("mac") >= 0){
 		var osPlatformFlash = "Mac";
+	}else if(platform.toLowerCase().indexOf("android") >= 0 || platform.toLowerCase().indexOf("pike") >= 0){
+		var osPlatform = "Android";
 	}else{
 		var osPlatformFlash ="Other";
 	}
@@ -499,12 +533,16 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 	//We test with oscpu 
 	//add the equivalent of oscpu for ie
 	if(oscpu != undefined){
-		if(oscpu.toLowerCase().indexOf("windows") >= 0){
+		if(oscpu.toLowerCase().indexOf("win") >= 0){
 			var osOscpu = "Windows";
 		}else if(oscpu.toLowerCase().indexOf("linux") >= 0){
 			var osOscpu = "Linux";
+		}else if(platform.toLowerCase().indexOf("ipad") >= 0 || platform.toLowerCase().indexOf("ipod") >= 0 || platform.toLowerCase().indexOf("iphone") >= 0){
+			var osPlatform = "iOS";
 		}else if(oscpu.toLowerCase().indexOf("mac") >= 0){
 			var osOscpu ="Mac";
+		}else if(platform.toLowerCase().indexOf("android") >= 0 || platform.toLowerCase().indexOf("pike") >= 0){
+			var osPlatform = "Android";
 		}else{
 			var osOscpu ="Other";
 		}
@@ -592,6 +630,15 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 		}
 	}
 
+	//We detect if the person uses a mobile device
+	if (('ontouchstart' in window) ||
+	     (navigator.maxTouchPoints > 0) ||
+	     (navigator.msMaxTouchPoints > 0)) {
+	      var mobileDevice = true;
+	}else{
+		var mobileDevice = false;
+	}
+
 	//We define weight to choose the true os
 	var weightNavUa = 1;
 	var weightHttpUa = 1;
@@ -603,8 +650,11 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 
 	var mapScores = new Object();
 	mapScores["Windows"] = 0;
+	mapScores["Windows Phone"] =0;
 	mapScores["Mac"] = 0;
+	mapScores["iOS"] = 0;
 	mapScores["Linux"] =0;
+	mapScores["Android"] = 0;
 	mapScores["Other"] =0;
 
 	mapScores[osUaNav] += weightNavUa;
@@ -628,7 +678,18 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 			max = k;
 		}
 	}
-	mapScores["OS"] = max;
+
+	if(max === "Linux" && mobileDevice){
+		mapScores["OS"] = "Android";
+	}else if(max === "Mac" && mobileDevice){
+		mapScores["OS"] = "iOS";
+	}else if(max === "Windows" && mobileDevice){
+		mapScores["OS"] = "Windows Phone";
+	}else{
+		mapScores["OS"] = max;
+	}
+
+
 	return mapScores;
 }
 
