@@ -208,6 +208,7 @@ function check_dimensions(widthFlash, heightFlash){
 //If no flash platform pass an empty string ""
 function check_os(userAgentHttp, fontsFlash, platformFlash){
 	//Maybe problem with fonts/plugins as we consider android = Linux and iPhone = mac 
+
 	userAgent = navigator.userAgent;
 	oscpu = navigator.oscpu;
 	platform = navigator.platform;
@@ -1042,6 +1043,14 @@ function getFontsNoFlash(){
     return fonts;
 }
 
+function testMultipleMonitors(){
+	if(screen.width > 1.78*screen.height){
+		return true;
+	}else{
+		return false;
+	}
+}
+
 
 function Fingerprint (userAgentHttp, languagesHttp, acceptHttp, encodingHttp, connectionHttp, fontsFlash, platformFlash, widthFlash, heightFlash, languageFlash) {
 	
@@ -1130,6 +1139,7 @@ function Fingerprint (userAgentHttp, languagesHttp, acceptHttp, encodingHttp, co
     this.sessionStorage = testSessionStorage();
     this.timezoneOffset = new Date().getTimezoneOffset();
     this.fonts = this._getFonts();
+    this.multipleMonitors = testMultipleMonitors();
 
     this.guessOs = undefined;
     this.guessBrowser = undefined;
