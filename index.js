@@ -1,10 +1,7 @@
 /*
 	TODO : add battery to know if the personn uses a desktop computer
-	check problem with plugins on ie
+	add a real support for opera
 */
-
-var languagesHttp = "fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4";
-var userAgentHttp ="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.125 Safari/537.36";
 
 swfobject.embedSWF("OSData.swf", "OSData", "0", "0", "9.0.0");
 
@@ -209,9 +206,11 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
 	platform = navigator.platform;
 
 	//add cpuClass from ie
+	
 	if(userAgent != userAgentHttp){
 		return false;
 	}
+	
 	
 	//We extract the OS from the user agent
 	if(userAgent.toLowerCase().indexOf("windows phone") >= 0){
@@ -222,7 +221,7 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
 		var os = "Android";
 	}else if(userAgent.toLowerCase().indexOf("linux") >= 0){
 		var os ="Linux";
-	}else if(userAgent.toLowerCase().indexOf("iPhone") >= 0 || userAgent.toLowerCase().indexOf("iPad")){
+	}else if(userAgent.toLowerCase().indexOf("iPhone") >= 0 || userAgent.toLowerCase().indexOf("iPad") >=0 ){
 		var os = "iOS";
 	}else if(userAgent.toLowerCase().indexOf("mac") >= 0){
 		var os ="Mac";
@@ -230,6 +229,7 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
 		var os = "Other";
 	}
 	
+	console.log("os is : "+os);
 	//We detect if the person uses a mobile device
 	if (('ontouchstart' in window) ||
 	     (navigator.maxTouchPoints > 0) ||
@@ -240,6 +240,7 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
 	}
 
 	if(mobileDevice && os !== "Windows Phone" && os !=="Android" && os !=="iOS" && os !=="Other"){
+		console.log("test os 1");
 		return false;
 	}
 
@@ -247,49 +248,61 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
 	//We compare oscpu with the os extracted from the ua
 	if(oscpu != undefined){
 		if(oscpu.toLowerCase().indexOf("win") >= 0 && os !=="Windows" && os !=="Windows Phone"){
+			console.log("test os 2");
 			return false;
 		}else if(oscpu.toLowerCase().indexOf("linux") >= 0 && os !=="Linux" && os !=="Android"){
+			console.log("test os 3");
 			return false;
 		}else if(oscpu.toLowerCase().indexOf("mac") >= 0 && os !=="Mac" && os !=="iOS"){
+			console.log("test os 4");
 			return false;
 		}else if(oscpu.toLowerCase().indexOf("win") == 0 && oscpu.toLowerCase().indexOf("linux") == 0 && oscpu.toLowerCase().indexOf("mac") >= 0 && os != "other"){
+			console.log("test os 5");
 			return false;
 		}
 	}
 
 	//We compare platform with the os extracted from the ua
 	if(platform.toLowerCase().indexOf("win") >= 0 && os !=="Windows" && os !=="Windows Phone"){
+		console.log("test os 6");
 		return false;
 	}else if((platform.toLowerCase().indexOf("linux") >= 0 || platform.toLowerCase().indexOf("android") >= 0 || platform.toLowerCase().indexOf("pike") >= 0) && os !=="Linux" && os !=="Android"){
+		console.log("test os 7");
 		return false;
 	}else if((platform.toLowerCase().indexOf("mac") >= 0 ||  platform.toLowerCase().indexOf("ipad") >= 0 || platform.toLowerCase().indexOf("ipod") >= 0 || platform.toLowerCase().indexOf("iphone") >= 0) && os !=="Mac" && os !=="iOS"){
+		console.log("test os 8");
 		return false;
 	}else if(platform.toLowerCase().indexOf("win") == 0 && platform.toLowerCase().indexOf("linux") == 0 && platform.toLowerCase().indexOf("mac") >= 0 && os != "other"){
+		console.log("test os 9");
 		return false;
 	}
 
 	//We compare flash platform with the os extracted from the ua
 	if(platformFlash !==""){
 		if(platformFlash.toLowerCase().indexOf("win") >= 0 && os !=="Windows" && os !=="Windows Phone"){
+			console.log("test os 9");
 			return false;
 		}else if((platform.toLowerCase().indexOf("linux") >= 0 || platform.toLowerCase().indexOf("android") >= 0 || platform.toLowerCase().indexOf("pike") >= 0) && os !=="Linux" && os !=="Android"){
+			console.log("test os 10");
 			return false;
 		}else if((platform.toLowerCase().indexOf("mac") >= 0 ||  platform.toLowerCase().indexOf("ipad") >= 0 || platform.toLowerCase().indexOf("ipod") >= 0 || platform.toLowerCase().indexOf("iphone") >= 0) && os !=="Mac" && os !=="iOS"){
+			console.log("test os 11");
 			return false;
 		}else if(platformFlash.toLowerCase().indexOf("win") == 0 && platformFlash.toLowerCase().indexOf("linux") == 0 && platformFlash.toLowerCase().indexOf("mac") >= 0 && os != "other"){
+			console.log("test os 12");
 			return false;
 		}
 	}
 
 	//We check the plugins
 	if(navigator.plugins != undefined){
-		var listPLuginsWindows = ["microsoft office","adobe acrobat", "google update", "javatm platform se", "java deployment toolkit", "intel", "vlc web plugin", "nvidia", "google earth plugin"];
+		var listPluginsWindows = ["microsoft office","adobe acrobat", "google update", "javatm platform se", "java deployment toolkit", "intel", "vlc web plugin", "nvidia", "google earth plugin"];
 		//we don't use plugins for linux because there are not plugins which caracterize linux AND which are used by a wide majority of people
 		var listPluginsMac = ["default browser helper", "java applet plug-in", "sharepoint browser plug-in", "adobe acrobat npapi plug-in version", "webex", "webkit built-in pdf", "flip", "iphotophotocast", "google earth plug-in","quickTime plug-in"];
 		if(os === "Windows" || os === "Mac"){
 			var testPlugins = false;
 			for(var i =0; i < navigator.plugins.length; i++){
-				if((os === "Windows" && listPLuginsWindows.indexOf(navigator.plugins[i].name.toLowerCase()) >= 0) || (os === "Mac" && listPLuginsMac.indexOf(navigator.plugins[i].name.toLowerCase()) >= 0)){
+				if((os === "Windows" && listPluginsWindows.indexOf(navigator.plugins[i].name.toLowerCase()) >= 0) || (os === "Mac" && listPluginsMac.indexOf(navigator.plugins[i].name.toLowerCase()) >= 0)){
 					testPlugins = true;
 					break;
 				}
@@ -298,6 +311,7 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
 	}else{
 		//We are are in the case where the person uses ie, therefore we can infer that it's windows
 		if(os !== "Windows" && os !=="Windows Phone"){
+			console.log("test os 13");
 			return false;
 		}
 	}
@@ -322,8 +336,10 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
 		var pctFontsFlash = (counter/listFonts.length)*100;
 
 		if((os ==="Windows" || os ==="Mac") && !testPlugins && pctFontsFlash < 35){
+			console.log("test os 14");
 			return false;
 		}else if(os ==="Linux" && pctFontsFlash < 30){
+			console.log("test os 15");
 			return false;
 		}
 
@@ -348,11 +364,13 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
         }
 
         var pctFontsNoFlash = (counter/listFonts.length)*100;
-        console.log("test % fonts : "+pctFontsNoFlash);
+        console.log("test1 % fonts : "+pctFontsNoFlash);
 
-        if((os ==="Windows" || os ==="Mac") && !testPlugins && pctFontsNoFlash < 30){
+        if((os ==="Windows" || os ==="Mac") && !testPlugins && pctFontsNoFlash < 20){
+        	console.log("test os 16");
 			return false;
-		}else if(os ==="Linux" && pctFontsNoFlash < 25){
+		}else if(os ==="Linux" && pctFontsNoFlash < 15){
+			console.log("test os 17");
 			return false;
 		}
 	}
@@ -363,10 +381,12 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
 
 function check_browser(userAgentHttp){
 	userAgent = navigator.userAgent;
-	productSub = navigator.productSub;
+	productSub = navigator.productSub
+
 	if(userAgent != userAgentHttp){
 		return false;
 	}
+	
 
 	//we extract the browser from the user agent (respect the order of test)
 	if(userAgent.toLowerCase().indexOf("firefox") >= 0){
@@ -384,12 +404,13 @@ function check_browser(userAgentHttp){
 	}
 
 	if((browser === "Chrome" || browser==="Safari" || browser ==="Opera") && productSub != "20030107"){
+		console.log("test browser 1");
 		return false;
 	}
 
 	//Sort navigator prototype and compare it with the prototype of the browser we have extracted from the ua
 	navObjectProp = [];
-	for (var property in Object.getPrototypeOf(navigator)) {
+	for (var property in navigator) {
 		navObjectProp.push(property);
 	}
 	navObjectProp.sort();
@@ -399,18 +420,25 @@ function check_browser(userAgentHttp){
 	}
 
 	//Maybe problems with different version of browsers ?????? maybe do percentages ?
-	var protoFirefox = "appCodeName, appName, appVersion, battery, buildID, cookieEnabled, doNotTrack, geolocation, getGamepads, javaEnabled, language, languages, mediaDevices, mimeTypes, mozGetUserMedia, onLine, oscpu, platform, plugins, product, productSub, registerContentHandler, registerProtocolHandler, requestMediaKeySystemAccess, sendBeacon, taintEnabled, userAgent, vendor, vendorSub, vibrate, ";
-	var protoChrSafOp = "appCodeName, appName, appVersion, cookieEnabled, doNotTrack, geolocation, getBattery, getGamepads, getStorageUpdates, hardwareConcurrency, javaEnabled, language, languages, maxTouchPoints, mimeTypes, onLine, permissions, platform, plugins, product, productSub, registerProtocolHandler, requestMIDIAccess, requestMediaKeySystemAccess, sendBeacon, serviceWorker, unregisterProtocolHandler, userAgent, vendor, vendorSub, vibrate, webkitGetUserMedia, webkitPersistentStorage, webkitTemporaryStorage, ";
+	var protoFirefox = "appCodeName, appName, appVersion, battery, buildID, cookieEnabled, doNotTrack, geolocation, getGamepads, javaEnabled, language, languages, mediaDevices, mimeTypes, mozApps, mozContacts, mozGetUserMedia, mozPay, mozTCPSocket, onLine, oscpu, platform, plugins, product, productSub, registerContentHandler, registerProtocolHandler, requestMediaKeySystemAccess, sendBeacon, taintEnabled, userAgent, vendor, vendorSub, vibrate, ";
+	var protoChrOp = "appCodeName, appName, appVersion, cookieEnabled, doNotTrack, geolocation, getBattery, getGamepads, getStorageUpdates, hardwareConcurrency, javaEnabled, language, languages, maxTouchPoints, mimeTypes, onLine, permissions, platform, plugins, product, productSub, registerProtocolHandler, requestMIDIAccess, requestMediaKeySystemAccess, sendBeacon, serviceWorker, unregisterProtocolHandler, userAgent, vendor, vendorSub, vibrate, webkitGetUserMedia, webkitPersistentStorage, webkitTemporaryStorage, ";
 	var protoIE = "appCodeName, appMinorVersion, appName, appVersion, browserLanguage, confirmSiteSpecificTrackingException, confirmWebWideTrackingException, cookieEnabled, cpuClass, geolocation, javaEnabled, language, maxTouchPoints, mimeTypes, msLaunchUri, msManipulationViewsEnabled, msMaxTouchPoints, msPointerEnabled, msSaveBlob, msSaveOrOpenBlob, onLine, platform, plugins, pointerEnabled, product, removeSiteSpecificTrackingException, removeWebWideTrackingException, storeSiteSpecificTrackingException, storeWebWideTrackingException, systemLanguage, taintEnabled, userAgent, userLanguage, vendor, webdriver, ";
-	
+	var protoSafari = "appCodeName, appName, appVersion, cookieEnabled, geolocation, getStorageUpdates, javaEnabled, language, mimeTypes, onLine, platform, plugins, product, productSub, userAgent, vendor, vendorSub, ";
 	if(browser === "Firefox" && navObjectSorted !== protoFirefox){
+		console.log("test browser 2");
 		return false;
 	}
-	else if((browser === "Chrome" || browser ==="Safari" || browser ==="Opera") && navObjectSorted !== protoChrSafOp){
+	else if((browser === "Chrome" ||browser ==="Opera") && navObjectSorted !== protoChrOp){
+		console.log("test browser 3");
 		return false;
 	}else if(browser ==="Internet Explorer" && navObjectSorted != protoIE){
+		console.log("test browser 4");
 		return false;
-	}else if(browser ==="Other" && (navObjectSorted === protoFirefox || navObjectSorted === protoChrome || navObjectSorted === protoIE)){
+	}else if(browser ==="Safari" && navObjectSorted !==protoSafari){
+		console.log("test browser 4.1");
+		return false;
+	}else if(browser ==="Other" && (navObjectSorted === protoFirefox || navObjectSorted === protoChrOp|| navObjectSorted === protoIE || navObjectSorted === protoSafari)){
+		console.log("test browser 5");
 		return false;
 	}
 	//Cases with opera etc ...
@@ -435,7 +463,8 @@ function check_browser(userAgentHttp){
 		var testNamespace = false;
 	}
 
-	if((browser ==="Firefox" && !errFirefox) || (browser === "Internet Explorer" && !testNamespace) || (browser === "Safari" && (errFirefox || !testNamespace)) || (browser === "Chrome" && (errFirefox || !testNamespace))) {
+	if((browser ==="Firefox" && !errFirefox) || (browser === "Internet Explorer" && !testNamespace) || (browser === "Safari" && (errFirefox || testNamespace)) || (browser === "Chrome" && (errFirefox || testNamespace))) {
+		console.log("test browser 6");
 		return false;
 	}
 
@@ -569,8 +598,11 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 		}
 
 		var percentageFontsFlashWindows = (counterWindows/listFontsWindows.length)*100;
+		console.log("test fonts windows : "+percentageFontsFlashWindows);
 		var percentageFontsFlashMac = (counterMac/listFontsMac.length)*100;
+		console.log("test fonts mac : "+percentageFontsFlashMac);
 		var percentageFontsFlashLinux = (counterLinux/listFontsLinux.length)*100;
+		console.log("test fonts linux : "+percentageFontsFlashLinux);
 
 		if(percentageFontsFlashWindows > percentageFontsFlashLinux && percentageFontsFlashWindows > percentageFontsFlashMac && percentageFontsFlashWindows > 45){
 			var osFontsFlash = "Windows";
@@ -616,8 +648,11 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
         }
 
         var percentageFontsNoFlashWindows = (counterWindows/listFontsWindows.length)*100;
+        console.log("fonts windows : "+percentageFontsNoFlashWindows);
         var percentageFontsNoFlashMac = (counterMac/listFontsMac.length)*100; 
+        console.log("fonts mac : "+percentageFontsNoFlashMac);
         var percentageFontsNoFlashLinux = (counterLinux/listFontsLinux.length)*100;
+        console.log("fonts linux : "+percentageFontsNoFlashLinux);
 
         if(percentageFontsNoFlashWindows > percentageFontsNoFlashLinux && percentageFontsNoFlashWindows > percentageNoFontsFlashMac && percentageFontsNoFlashWindows > 45){
 			var osFontsNoFlash = "Windows";
@@ -734,7 +769,7 @@ function guess_browser(userAgentHttp){
 	}
 
 	navObjectProp = [];
-	for (var property in Object.getPrototypeOf(navigator)) {
+	for (var property in navigator) {
 		navObjectProp.push(property);
 	}
 	navObjectProp.sort();
@@ -744,17 +779,22 @@ function guess_browser(userAgentHttp){
 	}
 
 	//We look at the prototype of navigator
-	var protoFirefox = "appCodeName, appName, appVersion, battery, buildID, cookieEnabled, doNotTrack, geolocation, getGamepads, javaEnabled, language, languages, mediaDevices, mimeTypes, mozGetUserMedia, onLine, oscpu, platform, plugins, product, productSub, registerContentHandler, registerProtocolHandler, requestMediaKeySystemAccess, sendBeacon, taintEnabled, userAgent, vendor, vendorSub, vibrate, ";
-	var protoChrome = "appCodeName, appName, appVersion, cookieEnabled, doNotTrack, geolocation, getBattery, getGamepads, getStorageUpdates, hardwareConcurrency, javaEnabled, language, languages, maxTouchPoints, mimeTypes, onLine, permissions, platform, plugins, product, productSub, registerProtocolHandler, requestMIDIAccess, requestMediaKeySystemAccess, sendBeacon, serviceWorker, unregisterProtocolHandler, userAgent, vendor, vendorSub, vibrate, webkitGetUserMedia, webkitPersistentStorage, webkitTemporaryStorage, ";
+	var protoFirefox = "appCodeName, appName, appVersion, battery, buildID, cookieEnabled, doNotTrack, geolocation, getGamepads, javaEnabled, language, languages, mediaDevices, mimeTypes, mozApps, mozContacts, mozGetUserMedia, mozPay, mozTCPSocket, onLine, oscpu, platform, plugins, product, productSub, registerContentHandler, registerProtocolHandler, requestMediaKeySystemAccess, sendBeacon, taintEnabled, userAgent, vendor, vendorSub, vibrate, ";
+	var protoChrOp = "appCodeName, appName, appVersion, cookieEnabled, doNotTrack, geolocation, getBattery, getGamepads, getStorageUpdates, hardwareConcurrency, javaEnabled, language, languages, maxTouchPoints, mimeTypes, onLine, permissions, platform, plugins, product, productSub, registerProtocolHandler, requestMIDIAccess, requestMediaKeySystemAccess, sendBeacon, serviceWorker, unregisterProtocolHandler, userAgent, vendor, vendorSub, vibrate, webkitGetUserMedia, webkitPersistentStorage, webkitTemporaryStorage, ";
 	var protoIE = "appCodeName, appMinorVersion, appName, appVersion, browserLanguage, confirmSiteSpecificTrackingException, confirmWebWideTrackingException, cookieEnabled, cpuClass, geolocation, javaEnabled, language, maxTouchPoints, mimeTypes, msLaunchUri, msManipulationViewsEnabled, msMaxTouchPoints, msPointerEnabled, msSaveBlob, msSaveOrOpenBlob, onLine, platform, plugins, pointerEnabled, product, removeSiteSpecificTrackingException, removeWebWideTrackingException, storeSiteSpecificTrackingException, storeWebWideTrackingException, systemLanguage, taintEnabled, userAgent, userLanguage, vendor, webdriver, ";
-	
+	var protoSafari = "appCodeName, appName, appVersion, cookieEnabled, geolocation, getStorageUpdates, javaEnabled, language, mimeTypes, onLine, platform, plugins, product, productSub, userAgent, vendor, vendorSub, ";
+
 	if(navObjectSorted === protoFirefox){
 		var browserPrototype = "Firefox";
 	}
-	else if(navObjectSorted === protoChrome){
+	else if(navObjectSorted === protoChrOp){
+		//find a solution for opera
 		var browserPrototype = "Chrome";
 	}else if(navObjectSorted === protoIE){
 		var browserPrototype = "Internet Explorer";
+	}else if(navObjectSorted === protoSafari){
+		console.log("test guess browser ");
+		var browserPrototype = "Safari";
 	}
 
 	//We look at the plugins
@@ -947,22 +987,52 @@ function Fingerprint (userAgentHttp, fontsFlash, platformFlash) {
     };
 }
 
-try{
-	var fl = document.getElementById("OSData");
-	fontsFlash = fl.getFonts();
-}catch(err){
-	setTimeout(function(){
-		var fontsFlash = getFlashFonts();
-		var platformFlash = getFlashPlatform();
-		console.log(guess_browser(userAgentHttp));
-		console.log(guess_os(userAgentHttp,fontsFlash, platformFlash));
-		console.log("check date : "+check_date());
-		console.log("check os : "+check_os(userAgentHttp,[], ""))
-		console.log("languages : "+check_languages(languagesHttp, ""));
-		console.log("dimensions : "+check_dimensions(0, 0));
-		console.log("width flash : "+getFlashWidth());
-		console.log("height flash : "+getFlashHeight());
-		console.log("language flash : "+getFlashLanguage());
-		console.log("Platform flash : "+getFlashPlatform());
-	},700);		
+
+xmlhttp=new XMLHttpRequest();
+xmlhttp.open("GET","index.php",true);
+xmlhttp.send();
+
+xmlhttp.onreadystatechange=function()
+{
+	if (xmlhttp.readyState==4 && xmlhttp.status==200){
+		var response = JSON.parse(xmlhttp.responseText);
+		var userAgentHttp = response.userAgentHttp;
+		var languagesHttp = response.acceptLanguagesHttp;
+		console.log("user agent http : "+userAgentHttp);
+		console.log("languages http : "+languagesHttp);
+
+		try{
+			var fl = document.getElementById("OSData");
+			fontsFlash = fl.getFonts();
+			var platformFlash = getFlashPlatform();
+				console.log(guess_browser(userAgentHttp));
+				console.log(guess_os(userAgentHttp,[], platformFlash));
+				console.log("check date : "+check_date());
+				console.log("check os : "+check_os(userAgentHttp, [], ""));
+				console.log("check browser : "+check_browser(userAgentHttp));
+				console.log("languages : "+check_languages(languagesHttp, ""));
+				console.log("dimensions : "+check_dimensions(0, 0));
+				console.log("width flash : "+getFlashWidth());
+				console.log("height flash : "+getFlashHeight());
+				console.log("language flash : "+getFlashLanguage());
+				console.log("Platform flash : "+getFlashPlatform());
+		}catch(err){
+			setTimeout(function(){
+				var fontsFlash = getFlashFonts();
+				var platformFlash = getFlashPlatform();
+				console.log(guess_browser(userAgentHttp));
+				console.log(guess_os(userAgentHttp,[], platformFlash));
+				console.log("check date : "+check_date());
+				console.log("check os : "+check_os(userAgentHttp, [], ""));
+				console.log("check browser : "+check_browser(userAgentHttp));
+				console.log("languages : "+check_languages(languagesHttp, ""));
+				console.log("dimensions : "+check_dimensions(0, 0));
+				console.log("width flash : "+getFlashWidth());
+				console.log("height flash : "+getFlashHeight());
+				console.log("language flash : "+getFlashLanguage());
+				console.log("Platform flash : "+getFlashPlatform());
+			},700);		
+		}
+	}
 }
+
