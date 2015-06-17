@@ -1,6 +1,7 @@
 /*
 	TODO : add battery to know if the personn uses a desktop computer
 	add a real support for opera
+	add support for canva js and web gl
 */
 
 swfobject.embedSWF("OSData.swf", "OSData", "0", "0", "9.0.0");
@@ -63,7 +64,7 @@ function getFlashFonts(){
 	        	fontsFlash[i].replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '_');
 	        }
 	     }catch(err){
-	     	return [];
+	     	throw new Exception();
 	     }
     }
     return fontsFlash;
@@ -77,7 +78,7 @@ function getFlashWidth(){
     	try{
     		return fl.getResolution()[0]; 
     	}catch(err){
-    		return 0;
+    		throw new Exception();
     	}    
     }
 }
@@ -90,7 +91,7 @@ function getFlashHeight(){
     	try{
     		return fl.getResolution()[1];   
     	}catch(err){
-    		return 0;
+    		throw new Exception();
     	}  
     }
 }
@@ -103,7 +104,7 @@ function getFlashLanguage(){
     	try{
     		return fl.getLanguage();     
     	}catch(err){
-    		return "";
+    		throw new Exception();
     	}
     }
 }
@@ -116,7 +117,7 @@ function getFlashPlatform(){
     	try{
     		return fl.getOS();     
     	}catch(err){
-    		return "";
+    		throw new Exception();
     	}
     }
 }
@@ -124,45 +125,51 @@ function getFlashPlatform(){
 
 
 function check_languages(languagesHttp, languageFlash){
-	language = navigator.language;
-	languages = navigator.languages;
+	language = navigator.language.substr(0,2);
+	languages = navigator.languages;	
 
 	//We check if navigator.language is equal to the first language of accept language http
 	try{
 		firstLanguageHttp = languagesHttp.substr(0,2);
 		if(firstLanguageHttp != language){
+			console.log("test language 1");
 			return false;
 		}
 	}catch(err){
+		console.log("test language 2");
 		return false;
 	}
 
 	//We check if navigator.language is equal to the first language of navigator.languages
-	try{
-		firstLanguages = languages[0].substr(0,2);
-		if(firstLanguages != language){
+	if(languages != undefined){
+		try{
+			firstLanguages = languages[0].substr(0,2);
+			if(firstLanguages != language){
+				console.log("test language 3");
+				return false;
+			}
+		}catch(err){
+			console.log("test language 4");
 			return false;
 		}
-	}catch(err){
-		console.log(err);
-		return false;
-	}
 
-	//We check if navigator.languages is equal to accept languages Http
-	var temp = languagesHttp;
-	while((languagesHttpParsed = temp.replace(/;q=[0-9.]+/,"")) != temp){
-		temp = languagesHttpParsed;
-	}
-	console.log(languagesHttpParsed);
-	console.log(languages);
-	if(languagesHttpParsed != languages){
-		return false;
-	}
+		//We check if navigator.languages is equal to accept languages Http
+		var temp = languagesHttp;
+		while((languagesHttpParsed = temp.replace(/;q=[0-9.]+/,"")) != temp){
+			temp = languagesHttpParsed;
+		}
 
-	if(languageFlash !== ""){
-		if(languageFlash !== language){
+		if(languagesHttpParsed != languages){
+			console.log("test language 5");
 			return false;
-		}		
+		}
+
+		if(languageFlash !== ""){
+			if(languageFlash !== language){
+				console.log("test language 6");
+				return false;
+			}		
+		}
 	}
 
 	return true;
@@ -928,7 +935,115 @@ function getBrowser(){
 	return browserNavUa;
 }
 
-function Fingerprint (userAgentHttp, fontsFlash, platformFlash) {
+function getPlugins(){
+	var plugins = "";
+	if(navigator.plugins == undefined){
+	    var nbPlugins = 1;
+	    var pluginsList = ["QuickTime", "Java", "DevalVR", "Flash", "Shockwave",
+	        "WindowsMediaPlayer", "Silverlight", "VLC", "AdobeReader", "PDFReader",
+	        "RealPlayer", "PDFjs"];
+	    PluginDetect.getVersion(".");
+	    for (i = 0; i < pluginsList.length; i++) {
+	        var ver = PluginDetect.getVersion(pluginsList[i]);
+	        if(ver != null){
+	            plugins+="Plugin "+nbPlugins+": "+pluginsList[i]+" "+ver+"; ";
+	            nbPlugins++;
+	        }
+	    }
+	} else {
+	    var np = window.navigator.plugins;
+	    var plist = new Array();
+	    for (var i = 0; i < np.length; i++) {
+	        plist[i] = np[i].name + "; ";
+	        plist[i] += np[i].description + "; ";
+	        plist[i] += np[i].filename;
+	        plist[i] += ". ";
+	    }
+	    plist.sort();
+	    for (i = 0; i < np.length; i++)
+	        plugins+= "Plugin "+i+": " + plist[i];
+	}
+
+	return plugins;
+};
+
+function testLocalStorage(){
+	try { 
+	    localStorage.fp = "test";
+	} catch (ex) {}
+
+	try {
+	    if (localStorage.fp == "test") {
+	       return true;
+	    } else {
+	       return false;
+	    }
+	} catch (ex) { 
+		return false; 
+	}
+}
+
+function testSessionStorage(){
+	try {
+	    if (sessionStorage.fp == "test") {
+	       return true;
+	    } else {
+	       return false;
+	    }
+	} catch (ex) { 
+		return false;
+	}
+}
+
+
+function Fingerprint (userAgentHttp, languagesHttp, acceptHttp, encodingHttp, connectionHttp, fontsFlash, platformFlash, widthFlash, heightFlash, languageFlash) {
+	
+	this._getTrueOs= function(){
+    	if(this.hasLiedOs){
+    		var os = guess_os(this.userAgentHttp, this.fontsFlash, this.platformFlash);
+    		this.guessOs = os;
+    		return os["OS"];
+    	}else{
+    		return getOs();
+    	}
+    };
+
+    this._getTrueBrowser = function(){
+    	if(this.hasLiedBrowser){
+    		var browser = guess_browser(this.userAgentHttp);
+    		this.guessBrowser = browser;
+    		return browser["browser"];
+    	}else{
+    		return getBrowser();
+    	}
+    };
+
+    this.hasLied = function(){
+    	if(!this.hasLiedOs && !this.hasLiedBrowser && !this.hasLiedDimensions && !this.hasLiedLanguages && !this.hasLiedDate){
+    		return false;
+    	}else{
+    		return true;
+    	}
+    }
+
+    this.userAgentHttp = userAgentHttp;
+    this.languagesHttp = languagesHttp;
+    this.acceptHttp = acceptHttp;
+    this.encodingHttp = encodingHttp;
+    this.connectionHttp = connectionHttp;
+
+    this.fontsFlash = fontsFlash;
+    this.platformFlash = platformFlash;
+    this.widthFlash = widthFlash;
+    this.heightFlash = heightFlash;
+    this.languageFlash = languageFlash;
+
+    this.hasLiedOs = !check_os(this.userAgentHttp, this.fontsFlash, this.platformFlash);
+    this.hasLiedBrowser = !check_browser(this.userAgentHttp);
+    this.hasLiedDimensions = !check_dimensions(this.widthFlash, this.heightFlash);
+    this.hasLiedLanguages = !check_languages(this.languagesHttp, this.languageFlash);
+    this.hasLiedDate = !check_date();
+
     this.width = screen.width;
     this.height = screen.height;
     this.availWidth = screen.availWidth;
@@ -950,43 +1065,28 @@ function Fingerprint (userAgentHttp, fontsFlash, platformFlash) {
     this.languages = navigator.languages;
     this.productSub = navigator.productSub;
     this.javaEnabled = navigator.javaEnabled;
+    this.plugins = getPlugins();
+    this.localStorage = testLocalStorage();
+    this.sessionStorage = testSessionStorage();
+    this.timezoneOffset = new Date().getTimezoneOffset();
 
-    this.os = this.getTrueOs();
-    this.browser = this.getTrueBrowser();
-    //add plugins, prototype of navigator
+    this.guessOs = undefined;
+    this.guessBrowser = undefined;
 
-    this.userAgentHttp = userAgentHttp;
-    //add other ĥttp
+    this.os = this._getTrueOs();
+    this.browser = this._getTrueBrowser();
+   	
 
-    this.fontsFlash = fontsFlash;
-    this.platformFlash= platformFlash;
 
-    this.getTrueOs= function(){
-    	var lie = check_os(this.userAgentHttp, this.fontsFlash, this.platformFlash);
-    	//if the person has lied
-    	if(!lie){
-    		var os = guess_os(this.userAgentHttp, this.fontsFlash, this.platformFlash);
-    		return os["OS"];
-    	}else{
-    		return getOs();
-    	}
-    };
-
-    this.getOs = function(){
-    	return this.os;
-    };
-
-    this.getTrueBrowser = function(){
-    	var lie = check_browser(this.userAgentHttp);
-    	if(!lie){
-    		var browser = guess_browser(this.userAgentHttp);
-    		return browser["browser"];
-    	}else{
-    		return getBrowser();
-    	}
-    };
 }
 
+
+
+
+
+
+
+//Test
 
 xmlhttp=new XMLHttpRequest();
 xmlhttp.open("GET","index.php",true);
@@ -998,40 +1098,35 @@ xmlhttp.onreadystatechange=function()
 		var response = JSON.parse(xmlhttp.responseText);
 		var userAgentHttp = response.userAgentHttp;
 		var languagesHttp = response.acceptLanguagesHttp;
-		console.log("user agent http : "+userAgentHttp);
-		console.log("languages http : "+languagesHttp);
-
+		var acceptHttp = response.acceptHttp;
+		var encodingHttp = response.encodingHttp;
+		var connectionHttp = response.connectionHttp;
 		try{
-			var fl = document.getElementById("OSData");
-			fontsFlash = fl.getFonts();
-			var platformFlash = getFlashPlatform();
-				console.log(guess_browser(userAgentHttp));
-				console.log(guess_os(userAgentHttp,[], platformFlash));
-				console.log("check date : "+check_date());
-				console.log("check os : "+check_os(userAgentHttp, [], ""));
-				console.log("check browser : "+check_browser(userAgentHttp));
-				console.log("languages : "+check_languages(languagesHttp, ""));
-				console.log("dimensions : "+check_dimensions(0, 0));
-				console.log("width flash : "+getFlashWidth());
-				console.log("height flash : "+getFlashHeight());
-				console.log("language flash : "+getFlashLanguage());
-				console.log("Platform flash : "+getFlashPlatform());
+			fontsFlash = getFlashFonts();
+			platformFlash = getFlashPlatform();
+			widthFlash = getFlashWidth();
+			heightFlash = getFlashHeight();
+			languageFlash = getFlashLanguage();
+
+			fp = new Fingerprint(userAgentHttp, languagesHttp, acceptHttp, encodingHttp, connectionHttp, fontsFlash, platformFlash, widthFlash, heightFlash, languageFlash);
 		}catch(err){
+			console.log("there was an exception ! ");
 			setTimeout(function(){
-				var fontsFlash = getFlashFonts();
-				var platformFlash = getFlashPlatform();
-				console.log(guess_browser(userAgentHttp));
-				console.log(guess_os(userAgentHttp,[], platformFlash));
-				console.log("check date : "+check_date());
-				console.log("check os : "+check_os(userAgentHttp, [], ""));
-				console.log("check browser : "+check_browser(userAgentHttp));
-				console.log("languages : "+check_languages(languagesHttp, ""));
-				console.log("dimensions : "+check_dimensions(0, 0));
-				console.log("width flash : "+getFlashWidth());
-				console.log("height flash : "+getFlashHeight());
-				console.log("language flash : "+getFlashLanguage());
-				console.log("Platform flash : "+getFlashPlatform());
-			},700);		
+				fontsFlash = getFlashFonts();
+				platformFlash = getFlashPlatform();
+				widthFlash = getFlashWidth();
+				heightFlash = getFlashHeight();
+				languageFlash = getFlashLanguage();
+
+				fp = new Fingerprint(userAgentHttp, languagesHttp, acceptHttp, encodingHttp, connectionHttp, fontsFlash, platformFlash, widthFlash, heightFlash, languageFlash);
+				console.log("plugins : "+fp.plugins);
+				console.log("has lied ? : "+fp.hasLied());
+				console.log("has lied os ? : "+fp.hasLiedOs);
+				console.log("has lied browser ? : "+fp.hasLiedBrowser);
+				console.log("has lied date ? : "+fp.hasLiedDate);
+				console.log("has lied dimensions ? : "+fp.hasLiedDimensions);
+				console.log("has lied languages ? : "+fp.hasLiedLanguages);
+			},700);
 		}
 	}
 }
