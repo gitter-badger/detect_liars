@@ -1060,6 +1060,7 @@ function testMobileDevice(){
 	      var mobileDevice = true;
 	}
 
+
 	if(navigator.getBattery != undefined){
 		console.log("test mobile device 2");
 		navigator.getBattery().then(function(result) {
@@ -1122,6 +1123,11 @@ function getCanvasJs(){
 	}
 
 	return canvasData;
+}
+
+function testCanvasJs(){
+	var elem = document.createElement("canvas");
+    return !!(elem.getContext && elem.getContext("2d"));
 }
 
 //This function has been taken from : https://github.com/Valve/fingerprintjs2/blob/master/fingerprint2.js
@@ -1231,6 +1237,15 @@ function getWebGl(){
 	return result.join("§");
 }
 
+function testIndexedDB(){
+	if(window.indexedDB != undefined){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+
 function Fingerprint (userAgentHttp, languagesHttp, acceptHttp, encodingHttp, connectionHttp, fontsFlash, platformFlash, widthFlash, heightFlash, languageFlash) {
 	
 	this._getTrueOs= function(){
@@ -1274,6 +1289,50 @@ function Fingerprint (userAgentHttp, languagesHttp, acceptHttp, encodingHttp, co
     	}
     };
 
+    this.isFirefox = function(){
+    	return this.browser === "Firefox";
+    };
+
+    this.isChrome = function(){
+    	return this.browser === "Chrome";
+    };
+
+    this.isSafari = function(){
+    	return this.browser === "Safari";
+    };
+
+    this.isOpera = function(){
+    	return this.browser === "Opera";
+    };
+
+    this.isIE = function(){
+    	return this.browser ==="Internet Explorer";
+    };
+
+    this.isWindows = function(){
+    	return this.os === "Windows";
+    };
+
+    this.isWindowsPhone = function(){
+    	return this.os === "Windows Phone";
+    }
+
+    this.isLinux = function(){
+    	return this.os === "Linux";
+    };
+
+    this.isAndroid = function(){
+    	return this.os === "Android";
+    };
+
+    this.isMac = function(){
+    	return this.os === "Mac";
+    };
+
+    this.isIOS = function(){
+    	return this.os === "iOS";
+    };
+
     this.userAgentHttp = userAgentHttp;
     this.languagesHttp = languagesHttp;
     this.acceptHttp = acceptHttp;
@@ -1312,15 +1371,18 @@ function Fingerprint (userAgentHttp, languagesHttp, acceptHttp, encodingHttp, co
     this.languages = navigator.languages;
     this.productSub = navigator.productSub;
     this.javaEnabled = navigator.javaEnabled;
+    this.doNotTrack = navigator.doNotTrack;
     this.plugins = getPlugins();
-    this.localStorage = testLocalStorage();
-    this.sessionStorage = testSessionStorage();
+    this.hasLocalStorage = testLocalStorage();
+    this.hasSessionStorage = testSessionStorage();
     this.timezoneOffset = new Date().getTimezoneOffset();
     this.fonts = this._getFonts();
+    this.hasCanvasJs = testCanvasJs();
     this.canvasJs = getCanvasJs();
     this.multipleMonitors = testMultipleMonitors();
     this.isMobileDevice = testMobileDevice();
     this.isLaptop = testLaptop();
+    this.hasIndexedDb = testIndexedDB();
 
     this.guessOs = undefined;
     this.guessBrowser = undefined;
@@ -1381,6 +1443,15 @@ xmlhttp.onreadystatechange=function()
 				console.log(fp.guessOs);	
 				console.log("test mobile device : "+testMobileDevice());
 				console.log("test laptop : "+fp.isLaptop);
+				console.log("has index db ? "+fp.hasIndexedDb);
+				console.log("has canvas js ? "+fp.hasCanvasJs);
+				console.log("is firefox ? "+fp.isFirefox());
+				console.log("is IE ? "+fp.isIE());
+				console.log("is chrome ? "+fp.isChrome());
+				console.log("is Opera ? "+fp.isOpera());
+				console.log("is Safari ? "+fp.isSafari());
+				console.log("is Windows ? "+fp.isWindows());
+				console.log("is Linux ? "+fp.isLinux());
 
 			},700);
 		}else{
@@ -1395,6 +1466,15 @@ xmlhttp.onreadystatechange=function()
 			console.log(fp.guessOs);
 			console.log("test mobile device : "+testMobileDevice());
 			console.log("test laptop : "+fp.isLaptop);
+			console.log("has index db ? "+fp.hasIndexedDb);
+			console.log("has canvas js ? "+fp.hasCanvasJs);
+			console.log("is firefox ? "+fp.isFirefox());
+			console.log("is IE ? "+fp.isIE());
+			console.log("is chrome ? "+fp.isChrome());
+			console.log("is Opera ? "+fp.isOpera());
+			console.log("is Safari ? "+fp.isSafari());
+			console.log("is Windows ? "+fp.isWindows());
+			console.log("is Linux ? "+fp.isLinux());
 
 		}
 	}
