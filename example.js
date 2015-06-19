@@ -1,6 +1,6 @@
 $.ajax({    
 	//ajax request to a php page which serves a Json response containing Http headers attributes                                                                                                                                                                                            
-    url: './index.php',
+    url: './example.php',
     contentType: 'application/x-www-form-urlencoded', 
     method: "POST",
     success: function(data){
@@ -11,7 +11,6 @@ $.ajax({
 		var encodingHttp = response.encodingHttp;
 		var connectionHttp = response.connectionHttp;
 
-		console.log("ua http : "+userAgentHttp);
 
 		//We initialize flash values with default values in the case the user doesn't have flash
 		fontsFlash = [];
