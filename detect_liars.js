@@ -177,7 +177,7 @@ function check_languages(languagesHttp, languageFlash){
 }
 
 //Pass widthFlash = heightFlash = 0 if no flash
-function check_dimensions(widthFlash, heightFlash){
+function check_resolution(widthFlash, heightFlash){
 	width = screen.width;
 	height = screen.height;
 	availWidth = screen.availWidth;
@@ -1384,7 +1384,7 @@ function Fingerprint (userAgentHttp, languagesHttp, acceptHttp, encodingHttp, co
 
     this.hasLiedOs = !check_os(this.userAgentHttp, this.fontsFlash, this.platformFlash);
     this.hasLiedBrowser = !check_browser(this.userAgentHttp);
-    this.hasLiedResolution = !check_dimensions(this.widthFlash, this.heightFlash);
+    this.hasLiedResolution = !check_resolution(this.widthFlash, this.heightFlash);
     this.hasLiedLanguages = !check_languages(this.languagesHttp, this.languageFlash);
     this.hasLiedDate = !check_date();
 
