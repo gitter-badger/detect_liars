@@ -3,7 +3,7 @@
 	add a real support for opera
 	add support for canva js and web gl
 	add a light evercookie support (write on localstorage, session storage, cookies, indexdb)
-	problem if navigator.battery != undefined
+	mime types supported 
 */
 
 listFontsWindows = ["JasmineUPC", "Minion Pro Cond", "Bodoni MT", "Franklin Gothic Demi Cond", "LilyUPC", "Showcard Gothic", "Freestyle Script", "Traditional Arabic", "Microsoft JhengHei", "NSimSun", "Roman", "Iskoola Pota", "Eras Medium ITC", "Vani", "Cordia New", "Browallia New", "Tekton Pro Cond", "Poor Richard", "Felix Titling", "Agency FB", "Sakkal Majalla", "Linux Libertine G", "Khmer UI", "Times New Roman CYR", "MS Outlook", "Segoe UI Light", "Rage Italic", "Segoe UI Semilight", "Andalus", "Arabic Typesetting", "MS UI Gothic", "Dotum", "DokChampa", "DaunPenh", "Kokila", "Aharoni", "Ravie", "Euphemia", "Tw Cen MT Condensed Extra Bold", "Times New Roman TUR", "Harlow Solid Italic", "Nueva Std Cond", "Segoe UI Symbol", "Lao UI", "Microsoft YaHei UI", "Yu Mincho", "Kartika", "Rockwell Condensed", "Parchment", "Vivaldi", "Berlin Sans FB", "Microsoft PhagsPa", "Tempus Sans ITC", "Microsoft YaHei Light", "AngsanaUPC", "Eras Bold ITC", "Vrinda", "Viner Hand ITC", "Bodoni MT Black", "Sitka Display", "Yu Gothic Light", "Tw Cen MT Condensed", "CordiaUPC", "Gadugi", "Gisha", "Javanese Text", "Arial TUR", "Microsoft New Tai Lue", "Aparajita", "Microsoft JhengHei UI Light", "Miriam", "GulimChe", "IrisUPC", "Myanmar Text", "French Script MT", "Angsana New", "Magneto", "Gill Sans Ultra Bold Condensed", "Arial Greek", "Pristina", "Segoe UI", "Shonar Bangla", "Franklin Gothic Heavy", "Estrangelo Edessa", "Nirmala UI", "Informal Roman", "MV Boli", "Utsaah", "Courier New CYR", "Old English Text MT", "Arial Baltic", "Blackadder ITC", "Niagara Engraved", "Broadway", "Sylfaen", "Kunstler Script", "Sitka Text", "Bodoni MT Poster Compressed", "Microsoft YaHei UI Light", "Raavi", "Goudy Stout", "Courier New Greek", "Times New Roman Baltic", "Fixedsys", "Courier New CE", "Kalinga", "Sitka Heading", "Castellar", "Yu Gothic", "Small Fonts", "Maiandra GD", "Modern", "Leelawadee", "Arabic Transparent", "BrowalliaUPC", "Microsoft JhengHei UI", "KaiTi", "BatangChe", "DotumChe", "Microsoft Uighur", "Eras Demi ITC", "Miriam Fixed", "Snap ITC", "DilleniaUPC", "Minion Pro Med", "Malgun Gothic", "Gigi", "Lithos Pro Regular", "Rod", "High Tower Text", "Levenim MT", "Meiryo UI", "Franklin Gothic Medium Cond", "Chiller", "Jokerman", "Leelawadee UI Semilight", "DFKai-SB", "Bodoni MT Condensed", "Segoe Print", "Sitka Banner", "Minion Pro SmBd", "Segoe Script", "Elephant", "Courier New Baltic", "Vladimir Script", "Juice ITC", "Algerian", "Segoe UI Emoji", "Niagara Solid", "Vijaya", "Myriad Pro Light", "GungsuhChe", "Tekton Pro Ext", "Gill Sans MT Condensed", "EucrosiaUPC", "Times New Roman CE", "Tunga", "Arial CE", "OCR A Extended", "Mangal", "Franklin Gothic Demi", "Microsoft JhengHei Light", "Courier New TUR", "Ebrima", "Myriad Pro Cond", "Urdu Typesetting", "Arial CYR", "Aldhabi", "Bradley Hand ITC", "FrankRuehl", "Nyala", "MS Serif", "KodchiangUPC", "Terminal", "Sitka Subheading", "Segoe UI Semibold", "Yu Mincho Demibold", "Gautami", "Palace Script MT", "Yu Mincho Light", "FreesiaUPC", "Segoe UI Black", "Simplified Arabic", "System", "Narkisim", "Nirmala UI Semilight", "Californian FB", "FangSong", "Latha", "Kristen ITC", "David", "Eras Light ITC", "Berlin Sans FB Demi", "Leelawadee UI", "Sitka Small", "Gungsuh", "Centaur", "MS Sans Serif", "Forte", "Microsoft YaHei", "Times New Roman Greek", "Gill Sans MT Ext Condensed Bold", "Linux Biolinum G", "MoolBoran", "Shruti", "Simplified Arabic Fixed", "Script MT Bold"];
@@ -1148,7 +1148,7 @@ function testLaptop(){
 		navigator.getBattery().then(function(result) {
 			var hasBattery = true;	
 		});
-	}else if(navigator.battery != undefined){
+	}else if(navigator.battery != undefined && navigator.battery.level < 1){
 		var hasBattery = true;
 	}
 
@@ -1189,6 +1189,16 @@ function testCanvasJs(){
 }
 
 //This function has been taken from : https://github.com/Valve/fingerprintjs2/blob/master/fingerprint2.js
+function getWebglCanvas(){
+  var canvas = document.createElement("canvas");
+  var gl = null;
+  try {
+    gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+  } catch(e) { /* squelch */ }
+  if (!gl) { gl = null; }
+  return gl;
+}
+
 function getWebGl(){
 	var gl;
 	var fa2s = function(fa) {
@@ -1303,6 +1313,12 @@ function testIndexedDB(){
 	}
 }
 
+function testAdBlock(){
+	var ads = document.createElement("div");
+    ads.setAttribute("id", "ads");
+    document.body.appendChild(ads);
+	return document.getElementById('ads')? 'no' : 'yes';
+}
 
 function Fingerprint (userAgentHttp, languagesHttp, acceptHttp, encodingHttp, connectionHttp, fontsFlash, platformFlash, widthFlash, heightFlash, languageFlash) {
 	
@@ -1345,6 +1361,20 @@ function Fingerprint (userAgentHttp, languagesHttp, acceptHttp, encodingHttp, co
 
     		return fonts;
     	}
+    };
+
+    this._getPrototypeNavigatorSorted = function(){
+    	navObjectProp = [];
+		for (var property in navigator) {
+			navObjectProp.push(property);
+		}
+		navObjectProp.sort();
+		navObjectSorted = "";
+		for(i=0; i<navObjectProp.length; i++){
+			navObjectSorted += navObjectProp[i]+", ";
+		}
+
+		return navObjectSorted;
     };
 
     this.isFirefox = function(){
@@ -1402,6 +1432,7 @@ function Fingerprint (userAgentHttp, languagesHttp, acceptHttp, encodingHttp, co
     this.widthFlash = widthFlash;
     this.heightFlash = heightFlash;
     this.languageFlash = languageFlash;
+    this.resolutionFlash = this.widthFlash+"x"+this.heightFlash;
 
     this.hasLiedOs = !check_os(this.userAgentHttp, this.fontsFlash, this.platformFlash);
     this.hasLiedBrowser = !check_browser(this.userAgentHttp);
@@ -1415,6 +1446,7 @@ function Fingerprint (userAgentHttp, languagesHttp, acceptHttp, encodingHttp, co
     this.availHeight = screen.availHeight;
     this.colorDepth = screen.colorDepth;
     this.pixelDepth = screen.pixelDepth;
+    this.resolution = this.width+"x"+this.height+"x"+this.colorDepth;
 
     this.userAgent = navigator.userAgent;
     this.appName = navigator.appName;
@@ -1426,7 +1458,7 @@ function Fingerprint (userAgentHttp, languagesHttp, acceptHttp, encodingHttp, co
     this.vendorSub = navigator.vendorSub;
     this.product = navigator.product;
     this.language = navigator.language;
-    this.languages = navigator.languages;
+    this.languages = navigator.languages.join("?");
     this.productSub = navigator.productSub;
     this.javaEnabled = navigator.javaEnabled;
     this.doNotTrack = navigator.doNotTrack;
@@ -1437,111 +1469,20 @@ function Fingerprint (userAgentHttp, languagesHttp, acceptHttp, encodingHttp, co
     this.fonts = this._getFonts();
     this.hasCanvasJs = testCanvasJs();
     this.canvasJs = getCanvasJs();
+    this.webgl = getWebGl();
     this.multipleMonitors = testMultipleMonitors();
     this.isMobileDevice = testMobileDevice();
     this.isLaptop = testLaptop();
     this.hasIndexedDb = testIndexedDB();
+    this.cookie = navigator.cookieEnabled;
+    this.adBlock = testAdBlock();
+    this.prototypeNavigator = this._getPrototypeNavigatorSorted();
 
     this.guessOs = undefined;
     this.guessBrowser = undefined;
 
     this.os = this._getTrueOs();
     this.browser = this._getTrueBrowser();
-
 }
 
-
-
-
-
-
-//Test
-
-xmlhttp=new XMLHttpRequest();
-xmlhttp.open("GET","index.php",true);
-xmlhttp.send();
-
-xmlhttp.onreadystatechange=function()
-{
-	if (xmlhttp.readyState==4 && xmlhttp.status==200){
-		var response = JSON.parse(xmlhttp.responseText);
-		var userAgentHttp = response.userAgentHttp;
-		var languagesHttp = response.acceptLanguagesHttp;
-		var acceptHttp = response.acceptHttp;
-		var encodingHttp = response.encodingHttp;
-		var connectionHttp = response.connectionHttp;
-		var plugins = getPlugins();
-		console.log("ua http :"+userAgentHttp);
-		console.log("ua : "+navigator.userAgent);
-		console.log("ua : "+navigator.platform);
-
-		fontsFlash = [];
-		platformFlash = "";
-		widthFlash = 0;
-		heightFlash = 0;
-		languageFlash = "";
-
-		if((plugins.indexOf("flash") > -1) || (plugins.indexOf("Flash") > -1)){
-			setTimeout(function(){
-				try{
-					fontsFlash = getFlashFonts();
-					platformFlash = getFlashPlatform();
-					widthFlash = getFlashWidth();
-					heightFlash = getFlashHeight();
-					languageFlash = getFlashLanguage();
-				}catch(err){
-					//if the user has flash but it is blocked
-				}
-
-				fp = new Fingerprint(userAgentHttp, languagesHttp, acceptHttp, encodingHttp, connectionHttp, fontsFlash, platformFlash, widthFlash, heightFlash, languageFlash);
-				console.log("plugins : "+fp.plugins);
-				console.log("has lied ? : "+fp.hasLied());
-				console.log("has lied os ? : "+fp.hasLiedOs);
-				console.log("has lied browser ? : "+fp.hasLiedBrowser);
-				console.log("has lied date ? : "+fp.hasLiedDate);
-				console.log("has lied dimensions ? : "+fp.hasLiedDimensions);
-				console.log("has lied languages ? : "+fp.hasLiedLanguages);
-				console.log(fp.guessOs);	
-				console.log("test mobile device : "+testMobileDevice());
-				console.log("test laptop : "+fp.isLaptop);
-				console.log("has index db ? "+fp.hasIndexedDb);
-				console.log("has canvas js ? "+fp.hasCanvasJs);
-				console.log("is firefox ? "+fp.isFirefox());
-				console.log("is IE ? "+fp.isIE());
-				console.log("is chrome ? "+fp.isChrome());
-				console.log("is Opera ? "+fp.isOpera());
-				console.log("is Safari ? "+fp.isSafari());
-				console.log("is Windows ? "+fp.isWindows());
-				console.log("is Linux ? "+fp.isLinux());
-				console.log("Multiple monitors ? "+fp.multipleMonitors);
-				console.log("test os : "+getOs());
-
-			},700);
-		}else{
-			fp = new Fingerprint(userAgentHttp, languagesHttp, acceptHttp, encodingHttp, connectionHttp, fontsFlash, platformFlash, widthFlash, heightFlash, languageFlash);
-			console.log("plugins : "+fp.plugins);
-			console.log("has lied ? : "+fp.hasLied());
-			console.log("has lied os ? : "+fp.hasLiedOs);
-			console.log("has lied browser ? : "+fp.hasLiedBrowser);
-			console.log("has lied date ? : "+fp.hasLiedDate);
-			console.log("has lied dimensions ? : "+fp.hasLiedDimensions);
-			console.log("has lied languages ? : "+fp.hasLiedLanguages);	
-			console.log(fp.guessOs);
-			console.log("test mobile device : "+testMobileDevice());
-			console.log("test laptop : "+fp.isLaptop);
-			console.log("has index db ? "+fp.hasIndexedDb);
-			console.log("has canvas js ? "+fp.hasCanvasJs);
-			console.log("is firefox ? "+fp.isFirefox());
-			console.log("is IE ? "+fp.isIE());
-			console.log("is chrome ? "+fp.isChrome());
-			console.log("is Opera ? "+fp.isOpera());
-			console.log("is Safari ? "+fp.isSafari());
-			console.log("is Windows ? "+fp.isWindows());
-			console.log("is Linux ? "+fp.isLinux());
-			console.log("Multiple monitors ? "+fp.multipleMonitors);
-			console.log("test os : "+getOs());
-
-		}
-	}
-}
 
