@@ -139,11 +139,9 @@ function check_languages(languagesHttp, languageFlash){
 	try{
 		firstLanguageHttp = languagesHttp.substr(0,2);
 		if(firstLanguageHttp != language){
-			console.log("test language 1");
 			return false;
 		}
 	}catch(err){
-		console.log("test language 2");
 		return false;
 	}
 
@@ -152,11 +150,9 @@ function check_languages(languagesHttp, languageFlash){
 		try{
 			firstLanguages = languages[0].substr(0,2);
 			if(firstLanguages != language){
-				console.log("test language 3");
 				return false;
 			}
 		}catch(err){
-			console.log("test language 4");
 			return false;
 		}
 
@@ -167,14 +163,12 @@ function check_languages(languagesHttp, languageFlash){
 		}
 
 		if(languagesHttpParsed != languages){
-			console.log("test language 5");
 			return false;
 		}
 	}
 
 	if(languageFlash !== ""){
 		if(languageFlash !== language){
-			console.log("test language 6");
 			return false;
 		}		
 	}
@@ -254,7 +248,6 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
 	}
 
 	if(mobileDevice && os !== "Windows Phone" && os !=="Android" && os !=="iOS" && os !=="Other"){
-		console.log("test os 1");
 		return false;
 	}
 
@@ -262,48 +255,36 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
 	//We compare oscpu with the os extracted from the ua
 	if(oscpu != undefined){
 		if(oscpu.toLowerCase().indexOf("win") >= 0 && os !=="Windows" && os !=="Windows Phone"){
-			console.log("test os 2");
 			return false;
 		}else if(oscpu.toLowerCase().indexOf("linux") >= 0 && os !=="Linux" && os !=="Android"){
-			console.log("test os 3");
 			return false;
 		}else if(oscpu.toLowerCase().indexOf("mac") >= 0 && os !=="Mac" && os !=="iOS"){
-			console.log("test os 4");
 			return false;
 		}else if(oscpu.toLowerCase().indexOf("win") == 0 && oscpu.toLowerCase().indexOf("linux") == 0 && oscpu.toLowerCase().indexOf("mac") >= 0 && os != "other"){
-			console.log("test os 5");
 			return false;
 		}
 	}
 
 	//We compare platform with the os extracted from the ua
 	if(platform.toLowerCase().indexOf("win") >= 0 && os !=="Windows" && os !=="Windows Phone"){
-		console.log("test os 6");
 		return false;
 	}else if((platform.toLowerCase().indexOf("linux") >= 0 || platform.toLowerCase().indexOf("android") >= 0 || platform.toLowerCase().indexOf("pike") >= 0) && os !=="Linux" && os !=="Android"){
-		console.log("test os 7");
 		return false;
 	}else if((platform.toLowerCase().indexOf("mac") >= 0 ||  platform.toLowerCase().indexOf("ipad") >= 0 || platform.toLowerCase().indexOf("ipod") >= 0 || platform.toLowerCase().indexOf("iphone") >= 0) && os !=="Mac" && os !=="iOS"){
-		console.log("test os 8");
 		return false;
 	}else if(platform.toLowerCase().indexOf("win") == 0 && platform.toLowerCase().indexOf("linux") == 0 && platform.toLowerCase().indexOf("mac") >= 0 && os != "other"){
-		console.log("test os 9");
 		return false;
 	}
 
 	//We compare flash platform with the os extracted from the ua
 	if(platformFlash !==""){
 		if(platformFlash.toLowerCase().indexOf("win") >= 0 && os !=="Windows" && os !=="Windows Phone"){
-			console.log("test os 9");
 			return false;
 		}else if((platform.toLowerCase().indexOf("linux") >= 0 || platform.toLowerCase().indexOf("android") >= 0 || platform.toLowerCase().indexOf("pike") >= 0) && os !=="Linux" && os !=="Android"){
-			console.log("test os 10");
 			return false;
 		}else if((platform.toLowerCase().indexOf("mac") >= 0 ||  platform.toLowerCase().indexOf("ipad") >= 0 || platform.toLowerCase().indexOf("ipod") >= 0 || platform.toLowerCase().indexOf("iphone") >= 0) && os !=="Mac" && os !=="iOS"){
-			console.log("test os 11");
 			return false;
 		}else if(platformFlash.toLowerCase().indexOf("win") == 0 && platformFlash.toLowerCase().indexOf("linux") == 0 && platformFlash.toLowerCase().indexOf("mac") >= 0 && os != "other"){
-			console.log("test os 12");
 			return false;
 		}
 	}
@@ -340,7 +321,6 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
 	}else{
 		//We are are in the case where the person uses ie, therefore we can infer that it's windows
 		if(os !== "Windows" && os !=="Windows Phone"){
-			console.log("test os 13");
 			return false;
 		}
 	}
@@ -375,10 +355,8 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
 		}
 
 		if((os ==="Windows" || os ==="Mac") && !testPlugins && pctFontsFlash < 30){
-			console.log("test os 14");
 			return false;
 		}else if(os ==="Linux" && !testPlugins && pctFontsFlash < 25 && percentagesFontsNotLinux > 30){
-			console.log("test os 15");
 			return false;
 		}
 
@@ -415,13 +393,10 @@ function check_os(userAgentHttp, fontsFlash, platformFlash){
 			var percentagesFontsNotLinux = (counterFontsNotLinux/(listFontsMac.length + listFontsWindows.length))*100;
 		}
 
-        console.log("test1 % fonts : "+pctFontsNoFlash);
 
         if((os ==="Windows" || os ==="Mac") && !testPlugins && pctFontsNoFlash < 20){
-        	console.log("test os 16");
 			return false;
 		}else if(os ==="Linux" && pctFontsNoFlash < 15 && !testPlugins && percentagesFontsNotLinux > 25){
-			console.log("test os 17");
 			return false;
 		}
 	}
@@ -455,7 +430,6 @@ function check_browser(userAgentHttp){
 	}
 
 	if((browser === "Chrome" || browser==="Safari" || browser ==="Opera") && productSub != "20030107"){
-		console.log("test browser 1");
 		return false;
 	}
 
@@ -476,20 +450,15 @@ function check_browser(userAgentHttp){
 	var protoIE = "appCodeName, appMinorVersion, appName, appVersion, browserLanguage, confirmSiteSpecificTrackingException, confirmWebWideTrackingException, cookieEnabled, cpuClass, geolocation, javaEnabled, language, maxTouchPoints, mimeTypes, msLaunchUri, msManipulationViewsEnabled, msMaxTouchPoints, msPointerEnabled, msSaveBlob, msSaveOrOpenBlob, onLine, platform, plugins, pointerEnabled, product, removeSiteSpecificTrackingException, removeWebWideTrackingException, storeSiteSpecificTrackingException, storeWebWideTrackingException, systemLanguage, taintEnabled, userAgent, userLanguage, vendor, webdriver, ";
 	var protoSafari = "appCodeName, appName, appVersion, cookieEnabled, geolocation, getStorageUpdates, javaEnabled, language, mimeTypes, onLine, platform, plugins, product, productSub, userAgent, vendor, vendorSub, ";
 	if(browser === "Firefox" && navObjectSorted !== protoFirefox){
-		console.log("test browser 2");
 		return false;
 	}
 	else if((browser === "Chrome" ||browser ==="Opera") && navObjectSorted !== protoChrOp){
-		console.log("test browser 3");
 		return false;
 	}else if(browser ==="Internet Explorer" && navObjectSorted != protoIE){
-		console.log("test browser 4");
 		return false;
 	}else if(browser ==="Safari" && navObjectSorted !==protoSafari){
-		console.log("test browser 4.1");
 		return false;
 	}else if(browser ==="Other" && (navObjectSorted === protoFirefox || navObjectSorted === protoChrOp|| navObjectSorted === protoIE || navObjectSorted === protoSafari)){
-		console.log("test browser 5");
 		return false;
 	}
 	//Cases with opera etc ...
@@ -515,10 +484,8 @@ function check_browser(userAgentHttp){
 	}
 
 	if((browser ==="Firefox" && !errFirefox) || (browser === "Internet Explorer" && !testNamespace) || (browser === "Safari" && (errFirefox || testNamespace)) || (browser === "Chrome" && (errFirefox || testNamespace))) {
-		console.log("test browser 6");
 		return false;
 	}
-
 
 	return true;
 }
@@ -530,7 +497,6 @@ function check_date(){
 	if(diff != new Date().getTimezoneOffset()){
 		return false;
 	}
-
 	return true;
 }
 
@@ -560,7 +526,6 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 	}else if(userAgentHttp.toLowerCase().indexOf("mac") >= 0){
 		var osHttp ="Mac";
 	}else{
-		console.log("test other 1");
 		var osHttp = "Other";
 	}
 
@@ -568,7 +533,6 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 	if(userAgent.toLowerCase().indexOf("windows phone") >= 0){
 		var osUaNav ="Windows Phone";
 	}else if(userAgent.toLowerCase().indexOf("win") >= 0){
-		console.log("windows os !");
 		var osUaNav = "Windows";
 	}else if(userAgent.toLowerCase().indexOf("android") >= 0){
 		var os = "Android";
@@ -579,7 +543,6 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 	}else if(userAgent.toLowerCase().indexOf("mac") >= 0){
 		var osUaNav ="Mac";
 	}else{
-		console.log("test other 2");
 		var osUaNav = "Other";
 	}
 
@@ -595,7 +558,6 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 	}else if(platform.toLowerCase().indexOf("android") >= 0 || platform.toLowerCase().indexOf("pike") >= 0){
 		var osPlatform = "Android";
 	}else{
-		console.log("test other 3");
 		var osPlatform ="Other";
 	}
 
@@ -612,7 +574,6 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 		}else if(platform.toLowerCase().indexOf("android") >= 0 || platform.toLowerCase().indexOf("pike") >= 0){
 			var osPlatform = "Android";
 		}else{
-			console.log("flash platform : "+platformFlash);
 			var osPlatformFlash ="Other";
 		}
 	}
@@ -631,7 +592,6 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 		}else if(platform.toLowerCase().indexOf("android") >= 0 || platform.toLowerCase().indexOf("pike") >= 0){
 			var osPlatform = "Android";
 		}else{
-			console.log("test other 4");
 			var osOscpu ="Other";
 		}
 	}
@@ -654,11 +614,8 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 		}
 
 		var percentageFontsFlashWindows = (counterWindows/listFontsWindows.length)*100;
-		console.log("test fonts windows : "+percentageFontsFlashWindows);
 		var percentageFontsFlashMac = (counterMac/listFontsMac.length)*100;
-		console.log("test fonts mac : "+percentageFontsFlashMac);
 		var percentageFontsFlashLinux = (counterLinux/listFontsLinux.length)*100;
-		console.log("test fonts linux : "+percentageFontsFlashLinux);
 
 		if(percentageFontsFlashLinux > 10 && (percentageFontsFlashWindows + percentageFontsFlashMac < 30)){
 			var osFontsFlash = "Linux";
@@ -670,7 +627,6 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 		}else if(percentageFontsFlashLinux > percentageFontsFlashWindows && percentageFontsFlashLinux > percentageFontsFlashMac && percentageFontsFlashLinux > 45){
 			var osFontsFlash ="Linux";
 		}else{
-			console.log("test other 5");
 			var osFontsFlash = "Other"
 		}
 
@@ -705,11 +661,8 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
         }
 
         var percentageFontsNoFlashWindows = (counterWindows/listFontsWindows.length)*100;
-        console.log("fonts windows : "+percentageFontsNoFlashWindows);
         var percentageFontsNoFlashMac = (counterMac/listFontsMac.length)*100; 
-        console.log("fonts mac : "+percentageFontsNoFlashMac);
         var percentageFontsNoFlashLinux = (counterLinux/listFontsLinux.length)*100;
-        console.log("fonts linux : "+percentageFontsNoFlashLinux);
 
         if(percentageFontsNoFlashLinux > 10 && (percentageFontsNoFlashWindows + percentageFontsNoFlashMac < 35)){
 			var osFontsNoFlash = "Linux";
@@ -720,7 +673,6 @@ function guess_os(userAgentHttp, fontsFlash, platformFlash){
 		}else if(percentageFontsNoFlashLinux > percentageFontsNoFlashWindows && percentageFontsNoFlashLinux > percentageFontsNoFlashMac && percentageFontsNoFlashLinux > 45){
 			var osFontsNoFlash ="Linux";
 		}else{
-			console.log("test other 6");
 			var osFontsNoFlash = "Other"
 		}
 	}
@@ -853,7 +805,6 @@ function guess_browser(userAgentHttp){
 	}else if(navObjectSorted === protoIE){
 		var browserPrototype = "Internet Explorer";
 	}else if(navObjectSorted === protoSafari){
-		console.log("test guess browser ");
 		var browserPrototype = "Safari";
 	}
 
@@ -1111,7 +1062,6 @@ function testMultipleMonitors(){
 }
 
 function testMobileDevice(){
-	console.log("test mobile device 1");
 	if (('ontouchstart' in window) ||
 	     (navigator.maxTouchPoints > 0) ||
 	     (navigator.msMaxTouchPoints > 0)) {
@@ -1120,7 +1070,6 @@ function testMobileDevice(){
 
 
 	if(navigator.getBattery != undefined){
-		console.log("test mobile device 2");
 		navigator.getBattery().then(function(result) {
 			var hasBattery = true;	
 		});
@@ -1144,7 +1093,6 @@ function testLaptop(){
 	}
 
 	if(navigator.getBattery != undefined){
-		console.log("test mobile device 2");
 		navigator.getBattery().then(function(result) {
 			var hasBattery = true;	
 		});
@@ -1374,7 +1322,7 @@ function Fingerprint (userAgentHttp, languagesHttp, acceptHttp, encodingHttp, co
 			navObjectSorted += navObjectProp[i]+", ";
 		}
 
-		return navObjectSorted;
+		return navObjectSorted.substr(0, navObjectSorted.length-2);
     };
 
     this.isFirefox = function(){
