@@ -1,4 +1,6 @@
 # Detect Liars
+
+[![Join the chat at https://gitter.im/antoinevastel/detect_liars](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/antoinevastel/detect_liars?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Detect Liars is a fingerprinting library developped in javascript. For better performances it must be used with a server side language to get information about the http headers sent by the client.
 
 ##Warning : This library is under development
